@@ -1,0 +1,532 @@
+{
+  "title": "Case #6: The Grand Cipher Conspiracy (5x5 Expert)",
+  "grid_size": 5,
+  "characters": [
+    {
+      "id": "A1",
+      "name": "Alan",
+      "job": "Actor",
+      "row": 1,
+      "col": 1,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "B1",
+      "name": "Betty",
+      "job": "Baker",
+      "row": 1,
+      "col": 2,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "C1",
+      "name": "Carl",
+      "job": "Chef",
+      "row": 1,
+      "col": 3,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "D1",
+      "name": "Dan",
+      "job": "Doctor",
+      "row": 1,
+      "col": 4,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "E1",
+      "name": "Eva",
+      "job": "Engineer",
+      "row": 1,
+      "col": 5,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "A2",
+      "name": "Fred",
+      "job": "Farmer",
+      "row": 2,
+      "col": 1,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "B2",
+      "name": "Gwen",
+      "job": "Geologist",
+      "row": 2,
+      "col": 2,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "C2",
+      "name": "Hugh",
+      "job": "Historian",
+      "row": 2,
+      "col": 3,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "D2",
+      "name": "Iris",
+      "job": "Inspector",
+      "row": 2,
+      "col": 4,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "E2",
+      "name": "Jack",
+      "job": "Journalist",
+      "row": 2,
+      "col": 5,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "A3",
+      "name": "Kate",
+      "job": "Kernel Dev",
+      "row": 3,
+      "col": 1,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "B3",
+      "name": "Leo",
+      "job": "Lawyer",
+      "row": 3,
+      "col": 2,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "C3",
+      "name": "Mia",
+      "job": "Musician",
+      "row": 3,
+      "col": 3,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "D3",
+      "name": "Nate",
+      "job": "Nurse",
+      "row": 3,
+      "col": 4,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "E3",
+      "name": "Olga",
+      "job": "Optician",
+      "row": 3,
+      "col": 5,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "A4",
+      "name": "Paul",
+      "job": "Pilot",
+      "row": 4,
+      "col": 1,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "B4",
+      "name": "Quinn",
+      "job": "Quality Eng",
+      "row": 4,
+      "col": 2,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "C4",
+      "name": "Rosa",
+      "job": "Researcher",
+      "row": 4,
+      "col": 3,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "D4",
+      "name": "Sam",
+      "job": "Singer",
+      "row": 4,
+      "col": 4,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "E4",
+      "name": "Tina",
+      "job": "Teacher",
+      "row": 4,
+      "col": 5,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "A5",
+      "name": "Urb",
+      "job": "Urban Planner",
+      "row": 5,
+      "col": 1,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "B5",
+      "name": "Vince",
+      "job": "Vet",
+      "row": 5,
+      "col": 2,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "C5",
+      "name": "Willa",
+      "job": "Writer",
+      "row": 5,
+      "col": 3,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "D5",
+      "name": "Xander",
+      "job": "X-ray Tech",
+      "row": 5,
+      "col": 4,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "E5",
+      "name": "Yara",
+      "job": "Yoga Coach",
+      "row": 5,
+      "col": 5,
+      "true_status": "INNOCENT"
+    }
+  ],
+  "clues": [
+    {
+      "id": "c1",
+      "type": "FACT",
+      "params": {
+        "person": "A1",
+        "status": "INNOCENT"
+      },
+      "description": "Alan (A1) is INNOCENT.",
+      "owner_id": "A1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c2",
+      "type": "BETWEEN",
+      "params": {
+        "char1": "A1",
+        "char2": "C1",
+        "target_status": "CRIMINAL"
+      },
+      "description": "Anyone strictly BETWEEN Alan (A1) and Carl (C1) in Row 1: Betty (B1) is CRIMINAL.",
+      "owner_id": "A1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c3",
+      "type": "EXACTLY",
+      "params": {
+        "k": 2,
+        "region": {
+          "type": "ROW",
+          "param": 1
+        }
+      },
+      "description": "Row 1 contains EXACTLY 2 CRIMINALs.",
+      "owner_id": "A1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c4",
+      "type": "SAME",
+      "params": {
+        "person1": "A1",
+        "person2": "C1"
+      },
+      "description": "Alan (A1) and Carl (C1) have the SAME status.",
+      "owner_id": "A1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c5",
+      "type": "BETWEEN",
+      "params": {
+        "char1": "C1",
+        "char2": "E1",
+        "target_status": "CRIMINAL"
+      },
+      "description": "Anyone strictly BETWEEN Carl (C1) and Eva (E1): Dan (D1) is CRIMINAL.",
+      "owner_id": "C1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c6",
+      "type": "SAME",
+      "params": {
+        "person1": "C1",
+        "person2": "E1"
+      },
+      "description": "Carl (C1) and Eva (E1) have the SAME status.",
+      "owner_id": "C1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c7",
+      "type": "PARITY",
+      "params": {
+        "parity_type": "EVEN",
+        "region": {
+          "type": "COLUMN",
+          "param": 1
+        }
+      },
+      "description": "Column A has an EVEN number of CRIMINALs.",
+      "owner_id": "E1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c8",
+      "type": "EXACTLY",
+      "params": {
+        "k": 3,
+        "region": {
+          "type": "ROW",
+          "param": 2
+        }
+      },
+      "description": "Row 2 contains EXACTLY 3 CRIMINALs.",
+      "owner_id": "E1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c9",
+      "type": "SAME",
+      "params": {
+        "person1": "A2",
+        "person2": "C2"
+      },
+      "description": "Fred (A2) and Hugh (C2) have the SAME status.",
+      "owner_id": "C1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c10",
+      "type": "DIFFERENT",
+      "params": {
+        "person1": "A2",
+        "person2": "B2"
+      },
+      "description": "Fred (A2) and Gwen (B2) have DIFFERENT statuses.",
+      "owner_id": "C1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c11",
+      "type": "BETWEEN",
+      "params": {
+        "char1": "C2",
+        "char2": "E2",
+        "target_status": "INNOCENT"
+      },
+      "description": "Anyone strictly BETWEEN Hugh (C2) and Jack (E2): Iris (D2) is INNOCENT.",
+      "owner_id": "A1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c12",
+      "type": "SAME",
+      "params": {
+        "person1": "C2",
+        "person2": "E2"
+      },
+      "description": "Hugh (C2) and Jack (E2) have the SAME status.",
+      "owner_id": "A1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c13",
+      "type": "EXACTLY",
+      "params": {
+        "k": 2,
+        "region": {
+          "type": "ROW",
+          "param": 3
+        }
+      },
+      "description": "Row 3 contains EXACTLY 2 CRIMINALs.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c14",
+      "type": "SAME",
+      "params": {
+        "person1": "A3",
+        "person2": "C3"
+      },
+      "description": "Kate (A3) and Mia (C3) have the SAME status.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c15",
+      "type": "BETWEEN",
+      "params": {
+        "char1": "A3",
+        "char2": "C3",
+        "target_status": "CRIMINAL"
+      },
+      "description": "Anyone strictly BETWEEN Kate (A3) and Mia (C3): Leo (B3) is CRIMINAL.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c16",
+      "type": "SAME",
+      "params": {
+        "person1": "A3",
+        "person2": "E3"
+      },
+      "description": "Kate (A3) and Olga (E3) have the SAME status.",
+      "owner_id": "D2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c17",
+      "type": "BETWEEN",
+      "params": {
+        "char1": "C3",
+        "char2": "E3",
+        "target_status": "CRIMINAL"
+      },
+      "description": "Anyone strictly BETWEEN Mia (C3) and Olga (E3): Nate (D3) is CRIMINAL.",
+      "owner_id": "D2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c18",
+      "type": "EXACTLY",
+      "params": {
+        "k": 3,
+        "region": {
+          "type": "ROW",
+          "param": 4
+        }
+      },
+      "description": "Row 4 contains EXACTLY 3 CRIMINALs.",
+      "owner_id": "A3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c19",
+      "type": "SAME",
+      "params": {
+        "person1": "A4",
+        "person2": "C4"
+      },
+      "description": "Paul (A4) and Rosa (C4) have the SAME status.",
+      "owner_id": "A3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c20",
+      "type": "SAME",
+      "params": {
+        "person1": "C4",
+        "person2": "E4"
+      },
+      "description": "Rosa (C4) and Tina (E4) have the SAME status.",
+      "owner_id": "C3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c21",
+      "type": "BETWEEN",
+      "params": {
+        "char1": "A4",
+        "char2": "C4",
+        "target_status": "INNOCENT"
+      },
+      "description": "Anyone strictly BETWEEN Paul (A4) and Rosa (C4): Quinn (B4) is INNOCENT.",
+      "owner_id": "C3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c22",
+      "type": "BETWEEN",
+      "params": {
+        "char1": "C4",
+        "char2": "E4",
+        "target_status": "INNOCENT"
+      },
+      "description": "Anyone strictly BETWEEN Rosa (C4) and Tina (E4): Sam (D4) is INNOCENT.",
+      "owner_id": "E3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c23",
+      "type": "PARITY",
+      "params": {
+        "parity_type": "EVEN",
+        "region": {
+          "type": "ROW",
+          "param": 5
+        }
+      },
+      "description": "Row 5 has an EVEN number of CRIMINALs.",
+      "owner_id": "B4",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c24",
+      "type": "SAME",
+      "params": {
+        "person1": "A5",
+        "person2": "C5"
+      },
+      "description": "Urb (A5) and Willa (C5) have the SAME status.",
+      "owner_id": "B4",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c25",
+      "type": "BETWEEN",
+      "params": {
+        "char1": "A5",
+        "char2": "C5",
+        "target_status": "CRIMINAL"
+      },
+      "description": "Anyone strictly BETWEEN Urb (A5) and Willa (C5): Vince (B5) is CRIMINAL.",
+      "owner_id": "B4",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c26",
+      "type": "SAME",
+      "params": {
+        "person1": "C5",
+        "person2": "E5"
+      },
+      "description": "Willa (C5) and Yara (E5) have the SAME status.",
+      "owner_id": "D4",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c27",
+      "type": "BETWEEN",
+      "params": {
+        "char1": "C5",
+        "char2": "E5",
+        "target_status": "CRIMINAL"
+      },
+      "description": "Anyone strictly BETWEEN Willa (C5) and Yara (E5): Xander (D5) is CRIMINAL.",
+      "owner_id": "D4",
+      "is_initially_revealed": false
+    }
+  ]
+}

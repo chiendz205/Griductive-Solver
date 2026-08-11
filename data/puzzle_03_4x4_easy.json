@@ -1,0 +1,176 @@
+{
+  "title": "Case #3: The Architect's Blueprint (4x4 Easy)",
+  "grid_size": 4,
+  "characters": [
+    { "id": "A1", "name": "Alice", "job": "Architect", "row": 1, "col": 1, "true_status": "INNOCENT" },
+    { "id": "B1", "name": "Bob", "job": "Biologist", "row": 1, "col": 2, "true_status": "CRIMINAL" },
+    { "id": "C1", "name": "Charlie", "job": "Chemist", "row": 1, "col": 3, "true_status": "INNOCENT" },
+    { "id": "D1", "name": "Doris", "job": "Designer", "row": 1, "col": 4, "true_status": "INNOCENT" },
+    { "id": "A2", "name": "Ethan", "job": "Economist", "row": 2, "col": 1, "true_status": "CRIMINAL" },
+    { "id": "B2", "name": "Fiona", "job": "Florist", "row": 2, "col": 2, "true_status": "INNOCENT" },
+    { "id": "C2", "name": "Gavin", "job": "Geologist", "row": 2, "col": 3, "true_status": "CRIMINAL" },
+    { "id": "D2", "name": "Hannah", "job": "Historian", "row": 2, "col": 4, "true_status": "INNOCENT" },
+    { "id": "A3", "name": "Isaac", "job": "Inspector", "row": 3, "col": 1, "true_status": "INNOCENT" },
+    { "id": "B3", "name": "Julia", "job": "Journalist", "row": 3, "col": 2, "true_status": "CRIMINAL" },
+    { "id": "C3", "name": "Kevin", "job": "Kernel Dev", "row": 3, "col": 3, "true_status": "INNOCENT" },
+    { "id": "D3", "name": "Laura", "job": "Librarian", "row": 3, "col": 4, "true_status": "CRIMINAL" },
+    { "id": "A4", "name": "Mason", "job": "Mechanic", "row": 4, "col": 1, "true_status": "CRIMINAL" },
+    { "id": "B4", "name": "Nora", "job": "Nurse", "row": 4, "col": 2, "true_status": "INNOCENT" },
+    { "id": "C4", "name": "Oliver", "job": "Optician", "row": 4, "col": 3, "true_status": "CRIMINAL" },
+    { "id": "D4", "name": "Paula", "job": "Paramedic", "row": 4, "col": 4, "true_status": "INNOCENT" }
+  ],
+  "clues": [
+    {
+      "id": "c1",
+      "type": "FACT",
+      "params": { "person": "A1", "status": "INNOCENT" },
+      "description": "Alice (A1) is verified INNOCENT.",
+      "owner_id": "A1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c2",
+      "type": "FACT",
+      "params": { "person": "B1", "status": "CRIMINAL" },
+      "description": "Bob (B1) is verified CRIMINAL.",
+      "owner_id": "A1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c3",
+      "type": "SAME",
+      "params": { "person1": "C1", "person2": "D1" },
+      "description": "Charlie (C1) and Doris (D1) have the SAME status.",
+      "owner_id": "A1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c4",
+      "type": "EXACTLY",
+      "params": { "k": 1, "region": { "type": "ROW", "param": 1 } },
+      "description": "Row 1 contains EXACTLY 1 CRIMINAL.",
+      "owner_id": "A1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c5",
+      "type": "FACT",
+      "params": { "person": "A2", "status": "CRIMINAL" },
+      "description": "Ethan (A2) is verified CRIMINAL.",
+      "owner_id": "B1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c6",
+      "type": "FACT",
+      "params": { "person": "B2", "status": "INNOCENT" },
+      "description": "Fiona (B2) is verified INNOCENT.",
+      "owner_id": "C1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c7",
+      "type": "FACT",
+      "params": { "person": "C2", "status": "CRIMINAL" },
+      "description": "Gavin (C2) is verified CRIMINAL.",
+      "owner_id": "D1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c8",
+      "type": "EXACTLY",
+      "params": { "k": 2, "region": { "type": "ROW", "param": 2 } },
+      "description": "Row 2 contains EXACTLY 2 CRIMINALs.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c9",
+      "type": "PARITY",
+      "params": { "parity_type": "ODD", "region": { "type": "COLUMN", "param": 4 } },
+      "description": "Column D contains an ODD number of CRIMINALs.",
+      "owner_id": "D2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c10",
+      "type": "FACT",
+      "params": { "person": "A3", "status": "INNOCENT" },
+      "description": "Isaac (A3) is verified INNOCENT.",
+      "owner_id": "D2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c11",
+      "type": "FACT",
+      "params": { "person": "B3", "status": "CRIMINAL" },
+      "description": "Julia (B3) is verified CRIMINAL.",
+      "owner_id": "A3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c12",
+      "type": "FACT",
+      "params": { "person": "C3", "status": "INNOCENT" },
+      "description": "Kevin (C3) is verified INNOCENT.",
+      "owner_id": "A3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c13",
+      "type": "EXACTLY",
+      "params": { "k": 2, "region": { "type": "ROW", "param": 3 } },
+      "description": "Row 3 contains EXACTLY 2 CRIMINALs.",
+      "owner_id": "C3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c14",
+      "type": "EXACTLY",
+      "params": { "k": 2, "region": { "type": "COLUMN", "param": 2 } },
+      "description": "Column B contains EXACTLY 2 CRIMINALs.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c15",
+      "type": "FACT",
+      "params": { "person": "B4", "status": "INNOCENT" },
+      "description": "Nora (B4) is verified INNOCENT.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c16",
+      "type": "FACT",
+      "params": { "person": "A4", "status": "CRIMINAL" },
+      "description": "Mason (A4) is verified CRIMINAL.",
+      "owner_id": "C3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c17",
+      "type": "FACT",
+      "params": { "person": "C4", "status": "CRIMINAL" },
+      "description": "Oliver (C4) is verified CRIMINAL.",
+      "owner_id": "C3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c18",
+      "type": "FACT",
+      "params": { "person": "D4", "status": "INNOCENT" },
+      "description": "Paula (D4) is verified INNOCENT.",
+      "owner_id": "B4",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c19",
+      "type": "EXACTLY",
+      "params": { "k": 2, "region": { "type": "ROW", "param": 4 } },
+      "description": "Row 4 contains EXACTLY 2 CRIMINALs.",
+      "owner_id": "B4",
+      "is_initially_revealed": false
+    }
+  ]
+}

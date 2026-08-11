@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Griductive Solver — Logic Deduction & DPLL SAT Agent</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navigation / Header -->
+        <header class="app-header">
+            <div class="logo-group">
+                <div class="logo-icon">⚡</div>
+                <div>
+                    <h1>Griductive Solver</h1>
+                </div>
+            </div>
+            <div class="header-controls">
+                <div class="control-group">
+                    <label for="puzzle-select">Select Puzzle:</label>
+                    <select id="puzzle-select" class="styled-select"></select>
+                </div>
+                <button id="btn-load" class="btn btn-primary">Load</button>
+                <button id="btn-restart" class="btn btn-secondary">⚡ Restart</button>
+                <button id="btn-hint" class="btn btn-hint">💡 Hint</button>
+                <button id="btn-auto-step" class="btn btn-action">▶ Step</button>
+                <button id="btn-auto-solve" class="btn btn-accent">🚀 Auto Solve</button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <!-- Left Side: Interactive Grid -->
+            <section class="grid-section">
+                <div class="section-header">
+                    <h2>Game Board <span id="puzzle-info-badge" class="badge">3x3 Grid</span></h2>
+                    <div id="uniqueness-tag" class="uniqueness-tag">Unique Solution Guaranteed</div>
+                </div>
+
+                <!-- Verdict Alert Banner -->
+                <div id="alert-banner" class="alert-banner hidden"></div>
+
+                <!-- Grid Container with Coordinates -->
+                <div class="grid-wrapper">
+                    <div id="grid-container" class="grid-board"></div>
+                </div>
+            </section>
+
+            <!-- Right Side: Clues & Deduction Trace -->
+            <section class="sidebar-section">
+                <!-- Public Clues Panel -->
+                <div class="panel clues-panel">
+                    <div class="panel-header">
+                        <h3>📜 Public Knowledge Base</h3>
+                        <span id="clue-count-badge" class="count-badge">0 Clues</span>
+                    </div>
+                    <div id="clues-list" class="clues-list">
+                        <div class="empty-state">No revealed clues yet.</div>
+                    </div>
+                </div>
+
+                <!-- Deduction Trace Log -->
+                <div class="panel trace-panel">
+                    <div class="panel-header">
+                        <h3>🧠 AI Deduction Trace</h3>
+                        <span id="step-count-badge" class="count-badge">0 Steps</span>
+                    </div>
+                    <div id="trace-list" class="trace-list">
+                        <div class="empty-state">Run Auto Step or Auto Solve to view AI reasoning steps.</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Character Selection Modal -->
+        <div id="verdict-modal" class="modal-backdrop hidden">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h3 id="modal-char-title">Character Verdict</h3>
+                    <button id="modal-close" class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="modal-char-info" class="char-details-text"></p>
+                    <p class="modal-instruction">Submit your logical verdict. Note: Incorrect guesses will be rejected without revealing hidden info!</p>
+                    <div class="verdict-btn-group">
+                        <button id="btn-verdict-innocent" class="btn btn-innocent">😇 INNOCENT</button>
+                        <button id="btn-verdict-criminal" class="btn btn-criminal">😈 CRIMINAL</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hint Popup Modal -->
+        <div id="hint-modal" class="modal-backdrop hidden">
+            <div class="modal-card modal-hint-card">
+                <div class="modal-header">
+                    <h3>💡 AI Logic Hint</h3>
+                    <button id="hint-close" class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="hint-content" class="hint-box"></div>
+                    <div class="modal-footer">
+                        <button id="hint-apply-btn" class="btn btn-accent">Apply Hint Verdict</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js?v=2"></script>
+</body>
+</html>

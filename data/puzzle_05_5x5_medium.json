@@ -1,0 +1,233 @@
+{
+  "title": "Case #5: The Corporate Espionage (5x5 Medium)",
+  "grid_size": 5,
+  "characters": [
+    { "id": "A1", "name": "Alan", "job": "Actor", "row": 1, "col": 1, "true_status": "INNOCENT" },
+    { "id": "B1", "name": "Betty", "job": "Baker", "row": 1, "col": 2, "true_status": "CRIMINAL" },
+    { "id": "C1", "name": "Carl", "job": "Chef", "row": 1, "col": 3, "true_status": "INNOCENT" },
+    { "id": "D1", "name": "Dan", "job": "Doctor", "row": 1, "col": 4, "true_status": "CRIMINAL" },
+    { "id": "E1", "name": "Eva", "job": "Engineer", "row": 1, "col": 5, "true_status": "INNOCENT" },
+    { "id": "A2", "name": "Fred", "job": "Farmer", "row": 2, "col": 1, "true_status": "CRIMINAL" },
+    { "id": "B2", "name": "Gwen", "job": "Geologist", "row": 2, "col": 2, "true_status": "INNOCENT" },
+    { "id": "C2", "name": "Hugh", "job": "Historian", "row": 2, "col": 3, "true_status": "CRIMINAL" },
+    { "id": "D2", "name": "Iris", "job": "Inspector", "row": 2, "col": 4, "true_status": "INNOCENT" },
+    { "id": "E2", "name": "Jack", "job": "Journalist", "row": 2, "col": 5, "true_status": "CRIMINAL" },
+    { "id": "A3", "name": "Kate", "job": "Kernel Dev", "row": 3, "col": 1, "true_status": "INNOCENT" },
+    { "id": "B3", "name": "Leo", "job": "Lawyer", "row": 3, "col": 2, "true_status": "CRIMINAL" },
+    { "id": "C3", "name": "Mia", "job": "Musician", "row": 3, "col": 3, "true_status": "INNOCENT" },
+    { "id": "D3", "name": "Nate", "job": "Nurse", "row": 3, "col": 4, "true_status": "CRIMINAL" },
+    { "id": "E3", "name": "Olga", "job": "Optician", "row": 3, "col": 5, "true_status": "INNOCENT" },
+    { "id": "A4", "name": "Paul", "job": "Pilot", "row": 4, "col": 1, "true_status": "CRIMINAL" },
+    { "id": "B4", "name": "Quinn", "job": "Quality Eng", "row": 4, "col": 2, "true_status": "INNOCENT" },
+    { "id": "C4", "name": "Rosa", "job": "Researcher", "row": 4, "col": 3, "true_status": "CRIMINAL" },
+    { "id": "D4", "name": "Sam", "job": "Singer", "row": 4, "col": 4, "true_status": "INNOCENT" },
+    { "id": "E4", "name": "Tina", "job": "Teacher", "row": 4, "col": 5, "true_status": "CRIMINAL" },
+    { "id": "A5", "name": "Urb", "job": "Urban Planner", "row": 5, "col": 1, "true_status": "INNOCENT" },
+    { "id": "B5", "name": "Vince", "job": "Vet", "row": 5, "col": 2, "true_status": "CRIMINAL" },
+    { "id": "C5", "name": "Willa", "job": "Writer", "row": 5, "col": 3, "true_status": "INNOCENT" },
+    { "id": "D5", "name": "Xander", "job": "X-ray Tech", "row": 5, "col": 4, "true_status": "CRIMINAL" },
+    { "id": "E5", "name": "Yara", "job": "Yoga Coach", "row": 5, "col": 5, "true_status": "INNOCENT" }
+  ],
+  "clues": [
+    {
+      "id": "c1",
+      "type": "FACT",
+      "params": { "person": "A1", "status": "INNOCENT" },
+      "description": "Alan (A1) is verified INNOCENT.",
+      "owner_id": "A1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c2",
+      "type": "FACT",
+      "params": { "person": "B1", "status": "CRIMINAL" },
+      "description": "Betty (B1) is verified CRIMINAL.",
+      "owner_id": "A1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c3",
+      "type": "FACT",
+      "params": { "person": "C1", "status": "INNOCENT" },
+      "description": "Carl (C1) is verified INNOCENT.",
+      "owner_id": "A1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c4",
+      "type": "FACT",
+      "params": { "person": "D1", "status": "CRIMINAL" },
+      "description": "Dan (D1) is verified CRIMINAL.",
+      "owner_id": "C1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c5",
+      "type": "FACT",
+      "params": { "person": "E1", "status": "INNOCENT" },
+      "description": "Eva (E1) is verified INNOCENT.",
+      "owner_id": "C1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c6",
+      "type": "FACT",
+      "params": { "person": "A2", "status": "CRIMINAL" },
+      "description": "Fred (A2) is verified CRIMINAL.",
+      "owner_id": "B1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c7",
+      "type": "FACT",
+      "params": { "person": "B2", "status": "INNOCENT" },
+      "description": "Gwen (B2) is verified INNOCENT.",
+      "owner_id": "E1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c8",
+      "type": "FACT",
+      "params": { "person": "C2", "status": "CRIMINAL" },
+      "description": "Hugh (C2) is verified CRIMINAL.",
+      "owner_id": "C1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c9",
+      "type": "FACT",
+      "params": { "person": "D2", "status": "INNOCENT" },
+      "description": "Iris (D2) is verified INNOCENT.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c10",
+      "type": "FACT",
+      "params": { "person": "E2", "status": "CRIMINAL" },
+      "description": "Jack (E2) is verified CRIMINAL.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c11",
+      "type": "FACT",
+      "params": { "person": "A3", "status": "INNOCENT" },
+      "description": "Kate (A3) is verified INNOCENT.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c12",
+      "type": "FACT",
+      "params": { "person": "B3", "status": "CRIMINAL" },
+      "description": "Leo (B3) is verified CRIMINAL.",
+      "owner_id": "D2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c13",
+      "type": "FACT",
+      "params": { "person": "C3", "status": "INNOCENT" },
+      "description": "Mia (C3) is verified INNOCENT.",
+      "owner_id": "D2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c14",
+      "type": "FACT",
+      "params": { "person": "D3", "status": "CRIMINAL" },
+      "description": "Nate (D3) is verified CRIMINAL.",
+      "owner_id": "C3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c15",
+      "type": "FACT",
+      "params": { "person": "E3", "status": "INNOCENT" },
+      "description": "Olga (E3) is verified INNOCENT.",
+      "owner_id": "C3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c16",
+      "type": "FACT",
+      "params": { "person": "A4", "status": "CRIMINAL" },
+      "description": "Paul (A4) is verified CRIMINAL.",
+      "owner_id": "C3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c17",
+      "type": "FACT",
+      "params": { "person": "B4", "status": "INNOCENT" },
+      "description": "Quinn (B4) is verified INNOCENT.",
+      "owner_id": "E3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c18",
+      "type": "FACT",
+      "params": { "person": "C4", "status": "CRIMINAL" },
+      "description": "Rosa (C4) is verified CRIMINAL.",
+      "owner_id": "E3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c19",
+      "type": "FACT",
+      "params": { "person": "D4", "status": "INNOCENT" },
+      "description": "Sam (D4) is verified INNOCENT.",
+      "owner_id": "B4",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c20",
+      "type": "FACT",
+      "params": { "person": "E4", "status": "CRIMINAL" },
+      "description": "Tina (E4) is verified CRIMINAL.",
+      "owner_id": "B4",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c21",
+      "type": "FACT",
+      "params": { "person": "A5", "status": "INNOCENT" },
+      "description": "Urb (A5) is verified INNOCENT.",
+      "owner_id": "B4",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c22",
+      "type": "FACT",
+      "params": { "person": "B5", "status": "CRIMINAL" },
+      "description": "Vince (B5) is verified CRIMINAL.",
+      "owner_id": "D4",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c23",
+      "type": "FACT",
+      "params": { "person": "C5", "status": "INNOCENT" },
+      "description": "Willa (C5) is verified INNOCENT.",
+      "owner_id": "D4",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c24",
+      "type": "FACT",
+      "params": { "person": "D5", "status": "CRIMINAL" },
+      "description": "Xander (D5) is verified CRIMINAL.",
+      "owner_id": "C5",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c25",
+      "type": "FACT",
+      "params": { "person": "E5", "status": "INNOCENT" },
+      "description": "Yara (E5) is verified INNOCENT.",
+      "owner_id": "C5",
+      "is_initially_revealed": false
+    }
+  ]
+}

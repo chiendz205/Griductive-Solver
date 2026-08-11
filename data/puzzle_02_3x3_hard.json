@@ -1,0 +1,272 @@
+{
+  "title": "Case #2: The Midnight Masquerade (3x3 Hard)",
+  "grid_size": 3,
+  "characters": [
+    {
+      "id": "A1",
+      "name": "Arthur",
+      "job": "Banker",
+      "row": 1,
+      "col": 1,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "B1",
+      "name": "Bella",
+      "job": "Singer",
+      "row": 1,
+      "col": 2,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "C1",
+      "name": "Carl",
+      "job": "Actor",
+      "row": 1,
+      "col": 3,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "A2",
+      "name": "Diana",
+      "job": "Nurse",
+      "row": 2,
+      "col": 1,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "B2",
+      "name": "Edward",
+      "job": "Judge",
+      "row": 2,
+      "col": 2,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "C2",
+      "name": "Fiona",
+      "job": "Teacher",
+      "row": 2,
+      "col": 3,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "A3",
+      "name": "George",
+      "job": "Driver",
+      "row": 3,
+      "col": 1,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "B3",
+      "name": "Hannah",
+      "job": "Writer",
+      "row": 3,
+      "col": 2,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "C3",
+      "name": "Ian",
+      "job": "Baker",
+      "row": 3,
+      "col": 3,
+      "true_status": "CRIMINAL"
+    }
+  ],
+  "clues": [
+    {
+      "id": "c1",
+      "type": "FACT",
+      "params": {
+        "person": "B1",
+        "status": "INNOCENT"
+      },
+      "description": "Bella (B1) is INNOCENT.",
+      "owner_id": "B1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c2",
+      "type": "BETWEEN",
+      "params": {
+        "char1": "A1",
+        "char2": "C1",
+        "target_status": "INNOCENT"
+      },
+      "description": "The character strictly BETWEEN Arthur (A1) and Carl (C1) is INNOCENT.",
+      "owner_id": "B1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c3",
+      "type": "EXACTLY",
+      "params": {
+        "k": 2,
+        "region": {
+          "type": "ROW",
+          "param": 1
+        }
+      },
+      "description": "Row 1 contains EXACTLY 2 CRIMINALs.",
+      "owner_id": "B1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c4",
+      "type": "SAME",
+      "params": {
+        "person1": "A1",
+        "person2": "C1"
+      },
+      "description": "Arthur (A1) and Carl (C1) have the SAME status.",
+      "owner_id": "A1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c5",
+      "type": "PARITY",
+      "params": {
+        "parity_type": "ODD",
+        "region": {
+          "type": "COLUMN",
+          "param": 2
+        }
+      },
+      "description": "Column B has an ODD number of CRIMINALs.",
+      "owner_id": "C1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c6",
+      "type": "EXACTLY",
+      "params": {
+        "k": 1,
+        "region": {
+          "type": "ROW",
+          "param": 2
+        }
+      },
+      "description": "Row 2 contains EXACTLY 1 CRIMINAL.",
+      "owner_id": "A1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c7",
+      "type": "DIFFERENT",
+      "params": {
+        "person1": "A2",
+        "person2": "B2"
+      },
+      "description": "Diana (A2) and Edward (B2) have DIFFERENT statuses.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c8",
+      "type": "BETWEEN",
+      "params": {
+        "char1": "A2",
+        "char2": "C2",
+        "target_status": "CRIMINAL"
+      },
+      "description": "The character strictly BETWEEN Diana (A2) and Fiona (C2) is CRIMINAL.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c9",
+      "type": "SAME",
+      "params": {
+        "person1": "A2",
+        "person2": "C2"
+      },
+      "description": "Diana (A2) and Fiona (C2) have the SAME status.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c10",
+      "type": "AT_MOST",
+      "params": {
+        "k": 0,
+        "region": {
+          "type": "EXPLICIT",
+          "param": [
+            "A2",
+            "C2"
+          ]
+        }
+      },
+      "description": "At most 0 characters in {Diana (A2), Fiona (C2)} are CRIMINAL.",
+      "owner_id": "C1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c11",
+      "type": "PARITY",
+      "params": {
+        "parity_type": "EVEN",
+        "region": {
+          "type": "ROW",
+          "param": 3
+        }
+      },
+      "description": "Row 3 has an EVEN number of CRIMINALs.",
+      "owner_id": "C2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c12",
+      "type": "BETWEEN",
+      "params": {
+        "char1": "A3",
+        "char2": "C3",
+        "target_status": "INNOCENT"
+      },
+      "description": "The character strictly BETWEEN George (A3) and Ian (C3) is INNOCENT.",
+      "owner_id": "A2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c13",
+      "type": "SAME",
+      "params": {
+        "person1": "A3",
+        "person2": "C3"
+      },
+      "description": "George (A3) and Ian (C3) have the SAME status.",
+      "owner_id": "A2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c14",
+      "type": "AT_LEAST",
+      "params": {
+        "k": 1,
+        "region": {
+          "type": "COLUMN",
+          "param": 1
+        }
+      },
+      "description": "Column A has AT LEAST 1 CRIMINAL.",
+      "owner_id": "A2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c15",
+      "type": "AT_LEAST",
+      "params": {
+        "k": 1,
+        "region": {
+          "type": "ROW",
+          "param": 3
+        }
+      },
+      "description": "Row 3 contains AT LEAST 1 CRIMINAL.",
+      "owner_id": "A2",
+      "is_initially_revealed": false
+    }
+  ]
+}

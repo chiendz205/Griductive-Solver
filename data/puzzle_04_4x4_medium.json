@@ -1,0 +1,362 @@
+{
+  "title": "Case #4: The Metropolis Syndicate (4x4 Medium)",
+  "grid_size": 4,
+  "characters": [
+    {
+      "id": "A1",
+      "name": "Adam",
+      "job": "Architect",
+      "row": 1,
+      "col": 1,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "B1",
+      "name": "Brenda",
+      "job": "Biologist",
+      "row": 1,
+      "col": 2,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "C1",
+      "name": "Caleb",
+      "job": "Chemist",
+      "row": 1,
+      "col": 3,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "D1",
+      "name": "Doris",
+      "job": "Designer",
+      "row": 1,
+      "col": 4,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "A2",
+      "name": "Ethan",
+      "job": "Economist",
+      "row": 2,
+      "col": 1,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "B2",
+      "name": "Fiona",
+      "job": "Florist",
+      "row": 2,
+      "col": 2,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "C2",
+      "name": "Gavin",
+      "job": "Geologist",
+      "row": 2,
+      "col": 3,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "D2",
+      "name": "Hannah",
+      "job": "Historian",
+      "row": 2,
+      "col": 4,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "A3",
+      "name": "Isaac",
+      "job": "Inspector",
+      "row": 3,
+      "col": 1,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "B3",
+      "name": "Julia",
+      "job": "Journalist",
+      "row": 3,
+      "col": 2,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "C3",
+      "name": "Kevin",
+      "job": "Kernel Dev",
+      "row": 3,
+      "col": 3,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "D3",
+      "name": "Laura",
+      "job": "Librarian",
+      "row": 3,
+      "col": 4,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "A4",
+      "name": "Mason",
+      "job": "Mechanic",
+      "row": 4,
+      "col": 1,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "B4",
+      "name": "Nora",
+      "job": "Nurse",
+      "row": 4,
+      "col": 2,
+      "true_status": "INNOCENT"
+    },
+    {
+      "id": "C4",
+      "name": "Oliver",
+      "job": "Optician",
+      "row": 4,
+      "col": 3,
+      "true_status": "CRIMINAL"
+    },
+    {
+      "id": "D4",
+      "name": "Paula",
+      "job": "Paramedic",
+      "row": 4,
+      "col": 4,
+      "true_status": "INNOCENT"
+    }
+  ],
+  "clues": [
+    {
+      "id": "c1",
+      "type": "FACT",
+      "params": {
+        "person": "A1",
+        "status": "INNOCENT"
+      },
+      "description": "Adam (A1) is INNOCENT.",
+      "owner_id": "A1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c2",
+      "type": "BETWEEN",
+      "params": {
+        "char1": "A1",
+        "char2": "C1",
+        "target_status": "CRIMINAL"
+      },
+      "description": "Anyone strictly BETWEEN Adam (A1) and Caleb (C1) in Row 1: Brenda (B1) is CRIMINAL.",
+      "owner_id": "A1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c3",
+      "type": "FACT",
+      "params": {
+        "person": "C1",
+        "status": "INNOCENT"
+      },
+      "description": "Caleb (C1) is INNOCENT.",
+      "owner_id": "A1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c4",
+      "type": "EXACTLY",
+      "params": {
+        "k": 2,
+        "region": {
+          "type": "ROW",
+          "param": 1
+        }
+      },
+      "description": "Row 1 contains EXACTLY 2 CRIMINALs.",
+      "owner_id": "C1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c5",
+      "type": "DIFFERENT",
+      "params": {
+        "person1": "A1",
+        "person2": "D1"
+      },
+      "description": "Adam (A1) and Doris (D1) have DIFFERENT statuses.",
+      "owner_id": "C1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c6",
+      "type": "SAME",
+      "params": {
+        "person1": "A2",
+        "person2": "C2"
+      },
+      "description": "Ethan (A2) and Gavin (C2) have the SAME status.",
+      "owner_id": "D1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c7",
+      "type": "EXACTLY",
+      "params": {
+        "k": 2,
+        "region": {
+          "type": "ROW",
+          "param": 2
+        }
+      },
+      "description": "Row 2 contains EXACTLY 2 CRIMINALs.",
+      "owner_id": "D1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c8",
+      "type": "PARITY",
+      "params": {
+        "parity_type": "EVEN",
+        "region": {
+          "type": "COLUMN",
+          "param": 2
+        }
+      },
+      "description": "Column B has an EVEN number of CRIMINALs.",
+      "owner_id": "B1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c9",
+      "type": "FACT",
+      "params": {
+        "person": "B2",
+        "status": "INNOCENT"
+      },
+      "description": "Fiona (B2) is INNOCENT.",
+      "owner_id": "B1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c10",
+      "type": "SAME",
+      "params": {
+        "person1": "B2",
+        "person2": "D2"
+      },
+      "description": "Fiona (B2) and Hannah (D2) have the SAME status.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c11",
+      "type": "BETWEEN",
+      "params": {
+        "char1": "A3",
+        "char2": "C3",
+        "target_status": "CRIMINAL"
+      },
+      "description": "The character strictly BETWEEN Isaac (A3) and Kevin (C3): Julia (B3) is CRIMINAL.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c12",
+      "type": "FACT",
+      "params": {
+        "person": "A3",
+        "status": "INNOCENT"
+      },
+      "description": "Isaac (A3) is INNOCENT.",
+      "owner_id": "D2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c13",
+      "type": "SAME",
+      "params": {
+        "person1": "A3",
+        "person2": "C3"
+      },
+      "description": "Isaac (A3) and Kevin (C3) have the SAME status.",
+      "owner_id": "D2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c14",
+      "type": "EXACTLY",
+      "params": {
+        "k": 2,
+        "region": {
+          "type": "ROW",
+          "param": 3
+        }
+      },
+      "description": "Row 3 contains EXACTLY 2 CRIMINALs.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c15",
+      "type": "DIFFERENT",
+      "params": {
+        "person1": "C3",
+        "person2": "D3"
+      },
+      "description": "Kevin (C3) and Laura (D3) have DIFFERENT statuses.",
+      "owner_id": "D2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c16",
+      "type": "PARITY",
+      "params": {
+        "parity_type": "EVEN",
+        "region": {
+          "type": "ROW",
+          "param": 4
+        }
+      },
+      "description": "Row 4 contains an EVEN number of CRIMINALs.",
+      "owner_id": "A3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c17",
+      "type": "SAME",
+      "params": {
+        "person1": "A4",
+        "person2": "C4"
+      },
+      "description": "Mason (A4) and Oliver (C4) have the SAME status.",
+      "owner_id": "A3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c18",
+      "type": "SAME",
+      "params": {
+        "person1": "B4",
+        "person2": "D4"
+      },
+      "description": "Nora (B4) and Paula (D4) have the SAME status.",
+      "owner_id": "C3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c19",
+      "type": "DIFFERENT",
+      "params": {
+        "person1": "A4",
+        "person2": "B4"
+      },
+      "description": "Mason (A4) and Nora (B4) have DIFFERENT statuses.",
+      "owner_id": "C3",
+      "is_initially_revealed": false
+    }
+  ]
+}

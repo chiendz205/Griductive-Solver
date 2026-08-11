@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GriductivePuzzleSchema",
+  "type": "object",
+  "required": ["grid_size", "characters", "clues"],
+  "properties": {
+    "title": { "type": "string" },
+    "grid_size": {
+      "type": "integer",
+      "minimum": 3,
+      "maximum": 5
+    },
+    "characters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "job", "row", "col", "true_status"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "job": { "type": "string" },
+          "row": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "col": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "true_status": { "type": "string", "enum": ["CRIMINAL", "INNOCENT"] }
+        }
+      }
+    },
+    "clues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "params", "description", "owner_id"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["FACT", "SAME", "DIFFERENT", "EXACTLY", "AT_LEAST", "AT_MOST", "PARITY", "BETWEEN"]
+          },
+          "owner_id": { "type": "string" },
+          "is_initially_revealed": { "type": "boolean" },
+          "description": { "type": "string" },
+          "params": { "type": "object" }
+        }
+      }
+    }
+  }
+}
