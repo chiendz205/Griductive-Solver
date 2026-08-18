@@ -34,6 +34,21 @@ def evaluate_different(clue: ClueData, assignment: Dict[int, bool], var_mgr: Var
     return v1 != v2
 
 
+def _get_k(clue: ClueData) -> int:
+    return clue.params.get("k", clue.params.get("count", 0))
+
+
+def _get_region(clue: ClueData) -> Region:
+    reg = clue.params.get("region")
+    if isinstance(reg, Region):
+        return reg
+    if isinstance(reg, dict):
+        return Region.from_dict(reg)
+    if "region_type" in clue.params:
+        return Region(RegionType(clue.params["region_type"]), clue.params.get("target_id") or clue.params.get("param"))
+    raise ValueError(f"Cannot parse region from clue params: {clue.params}")
+
+
 def evaluate_exactly(
     clue: ClueData,
     assignment: Dict[int, bool],
@@ -41,8 +56,8 @@ def evaluate_exactly(
     characters: Dict[str, Character],
     grid_size: int
 ) -> bool:
-    k = clue.params["k"]
-    region = Region.from_dict(clue.params["region"])
+    k = _get_k(clue)
+    region = _get_region(clue)
     char_ids = resolve_region_characters(region, characters, grid_size)
     criminal_count = sum(1 for cid in char_ids if assignment[var_mgr.get_var(cid)])
     return criminal_count == k
@@ -55,8 +70,8 @@ def evaluate_at_least(
     characters: Dict[str, Character],
     grid_size: int
 ) -> bool:
-    k = clue.params["k"]
-    region = Region.from_dict(clue.params["region"])
+    k = _get_k(clue)
+    region = _get_region(clue)
     char_ids = resolve_region_characters(region, characters, grid_size)
     criminal_count = sum(1 for cid in char_ids if assignment[var_mgr.get_var(cid)])
     return criminal_count >= k
@@ -69,8 +84,8 @@ def evaluate_at_most(
     characters: Dict[str, Character],
     grid_size: int
 ) -> bool:
-    k = clue.params["k"]
-    region = Region.from_dict(clue.params["region"])
+    k = _get_k(clue)
+    region = _get_region(clue)
     char_ids = resolve_region_characters(region, characters, grid_size)
     criminal_count = sum(1 for cid in char_ids if assignment[var_mgr.get_var(cid)])
     return criminal_count <= k
@@ -84,7 +99,7 @@ def evaluate_parity(
     grid_size: int
 ) -> bool:
     parity = ParityType(clue.params["parity_type"])
-    region = Region.from_dict(clue.params["region"])
+    region = _get_region(clue)
     char_ids = resolve_region_characters(region, characters, grid_size)
     criminal_count = sum(1 for cid in char_ids if assignment[var_mgr.get_var(cid)])
     if parity == ParityType.EVEN:

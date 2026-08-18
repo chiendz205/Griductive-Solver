@@ -5,6 +5,7 @@ Owns secret puzzle state, manages public knowledge base, and validates submitted
 
 import json
 from typing import List, Dict, Tuple, Optional, Any
+from jsonschema import validate, ValidationError
 from griductive.core.models import (
     Status, VerdictStatus, Character, ClueData, VerdictResult, PublicKBState
 )
@@ -31,6 +32,16 @@ class GameEngine(PublicKBInterface):
         """Loads puzzle configuration from JSON file path."""
         with open(json_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
+        
+        # Load and validate against schema
+        with open('data/puzzle_schema.json', 'r', encoding='utf-8') as f:
+            schema = json.load(f)
+        
+        try:
+            validate(instance=data, schema=schema)
+        except ValidationError as e:
+            raise ValueError(f"Invalid puzzle format: {e.message}")
+            
         self.load_puzzle_data(data)
 
     def load_puzzle_data(self, data: Dict[str, Any]):
