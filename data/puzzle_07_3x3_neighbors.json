@@ -1,0 +1,101 @@
+{
+  "title": "Case #7: Neighborhood Watch (3x3 Neighbors)",
+  "grid_size": 3,
+  "characters": [
+    { "id": "A1", "name": "Alice", "job": "Spy", "row": 1, "col": 1, "true_status": "INNOCENT" },
+    { "id": "B1", "name": "Bob", "job": "Guard", "row": 1, "col": 2, "true_status": "CRIMINAL" },
+    { "id": "C1", "name": "Charlie", "job": "Chef", "row": 1, "col": 3, "true_status": "INNOCENT" },
+    { "id": "A2", "name": "David", "job": "Doctor", "row": 2, "col": 1, "true_status": "CRIMINAL" },
+    { "id": "B2", "name": "Eve", "job": "Pilot", "row": 2, "col": 2, "true_status": "INNOCENT" },
+    { "id": "C2", "name": "Frank", "job": "Lawyer", "row": 2, "col": 3, "true_status": "CRIMINAL" },
+    { "id": "A3", "name": "Grace", "job": "Artist", "row": 3, "col": 1, "true_status": "INNOCENT" },
+    { "id": "B3", "name": "Heidi", "job": "Engineer", "row": 3, "col": 2, "true_status": "CRIMINAL" },
+    { "id": "C3", "name": "Ivan", "job": "Teacher", "row": 3, "col": 3, "true_status": "INNOCENT" }
+  ],
+  "clues": [
+    {
+      "id": "c1",
+      "type": "FACT",
+      "params": { "person": "A1", "status": "INNOCENT" },
+      "description": "Alice (A1) is verified INNOCENT.",
+      "owner_id": "A1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c2",
+      "type": "EXACTLY",
+      "params": {
+        "k": 2,
+        "region": { "type": "NEIGHBORS", "param": "A1" }
+      },
+      "description": "Alice's (A1) neighbors have EXACTLY 2 criminals.",
+      "owner_id": "A1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c3",
+      "type": "SAME",
+      "params": { "person1": "A1", "person2": "C1" },
+      "description": "Alice (A1) and Charlie (C1) have the SAME status.",
+      "owner_id": "A1",
+      "is_initially_revealed": true
+    },
+    {
+      "id": "c4",
+      "type": "FACT",
+      "params": { "person": "B2", "status": "INNOCENT" },
+      "description": "Eve (B2) is verified INNOCENT.",
+      "owner_id": "C1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c5",
+      "type": "EXACTLY",
+      "params": {
+        "k": 4,
+        "region": { "type": "NEIGHBORS", "param": "B2" }
+      },
+      "description": "Eve's (B2) neighbors contain EXACTLY 4 criminals.",
+      "owner_id": "C1",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c6",
+      "type": "SAME",
+      "params": { "person1": "A1", "person2": "A3" },
+      "description": "Alice (A1) and Grace (A3) have the SAME status.",
+      "owner_id": "B2",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c7",
+      "type": "SAME",
+      "params": { "person1": "A1", "person2": "C3" },
+      "description": "Alice (A1) and Ivan (C3) have the SAME status.",
+      "owner_id": "A3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c8",
+      "type": "EXACTLY",
+      "params": {
+        "k": 2,
+        "region": { "type": "NEIGHBORS", "param": "C1" }
+      },
+      "description": "Charlie's (C1) neighbors contain EXACTLY 2 criminals.",
+      "owner_id": "C3",
+      "is_initially_revealed": false
+    },
+    {
+      "id": "c9",
+      "type": "EXACTLY",
+      "params": {
+        "k": 2,
+        "region": { "type": "NEIGHBORS", "param": "A3" }
+      },
+      "description": "Grace's (A3) neighbors contain EXACTLY 2 criminals.",
+      "owner_id": "A3",
+      "is_initially_revealed": false
+    }
+  ]
+}

@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
             targetIds = [params.person];
         } else if (clue.type === 'SAME' || clue.type === 'DIFFERENT') {
             targetIds = [params.person1, params.person2];
-        } else if (['EXACTLY', 'AT_LEAST', 'AT_MOST', 'PARITY'].includes(clue.type)) {
+                } else if (['EXACTLY', 'AT_LEAST', 'AT_MOST', 'PARITY'].includes(clue.type)) {
             const region = params.region;
             if (region.type === 'ROW') {
                 const r = region.param;
@@ -238,6 +238,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } else if (region.type === 'EXPLICIT') {
                 targetIds = region.param;
+            } else if (region.type === 'NEIGHBORS') {
+                const centerId = params.target_id || clue.owner_id;
+                const centerChar = charactersMap[centerId];
+                if (centerChar) {
+                    Object.values(charactersMap).forEach(c => {
+                        if (c.id !== centerId && 
+                            Math.abs(c.row - centerChar.row) <= 1 && 
+                            Math.abs(c.col - centerChar.col) <= 1) {
+                            targetIds.push(c.id);
+                        }
+                    });
+                }
             }
         } else if (clue.type === 'BETWEEN') {
             targetIds = [params.char1, params.char2];

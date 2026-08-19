@@ -68,7 +68,7 @@ def list_puzzles():
 def load_puzzle():
     """Loads a specific puzzle from data/ directory."""
     req_data = request.json or {}
-    filename = req_data.get("filename", "puzzle_3x3_easy.json")
+    filename = req_data.get("filename", "puzzle_01_3x3_easy.json")
     filepath = os.path.join(DATA_DIR, filename)
 
     if not os.path.exists(filepath):

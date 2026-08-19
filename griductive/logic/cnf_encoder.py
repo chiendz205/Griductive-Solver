@@ -95,23 +95,36 @@ class CNFEncoder:
         # v1 XOR v2 : (v1 v v2) ^ (-v1 v -v2)
         return [[v1, v2], [-v1, -v2]]
 
+    def _get_k(self, clue: ClueData) -> int:
+        return clue.params.get("k", clue.params.get("count", 0))
+
+    def _get_region(self, clue: ClueData) -> Region:
+        reg = clue.params.get("region")
+        if isinstance(reg, Region):
+            return reg
+        if isinstance(reg, dict):
+            return Region.from_dict(reg)
+        if "region_type" in clue.params:
+            return Region(RegionType(clue.params["region_type"]), clue.params.get("target_id") or clue.params.get("param"))
+        raise ValueError(f"Cannot parse region from clue params: {clue.params}")
+
     def _encode_at_most(self, clue: ClueData) -> List[List[int]]:
-        k = clue.params["k"]
-        region = Region.from_dict(clue.params["region"])
+        k = self._get_k(clue)
+        region = self._get_region(clue)
         char_ids = resolve_region_characters(region, self.characters, self.grid_size)
         vars_list = [self.var_mgr.get_var(cid) for cid in char_ids]
         return self._encode_cardinality_at_most(vars_list, k)
 
     def _encode_at_least(self, clue: ClueData) -> List[List[int]]:
-        k = clue.params["k"]
-        region = Region.from_dict(clue.params["region"])
+        k = self._get_k(clue)
+        region = self._get_region(clue)
         char_ids = resolve_region_characters(region, self.characters, self.grid_size)
         vars_list = [self.var_mgr.get_var(cid) for cid in char_ids]
         return self._encode_cardinality_at_least(vars_list, k)
 
     def _encode_exactly(self, clue: ClueData) -> List[List[int]]:
-        k = clue.params["k"]
-        region = Region.from_dict(clue.params["region"])
+        k = self._get_k(clue)
+        region = self._get_region(clue)
         char_ids = resolve_region_characters(region, self.characters, self.grid_size)
         vars_list = [self.var_mgr.get_var(cid) for cid in char_ids]
         clauses = []
@@ -121,7 +134,7 @@ class CNFEncoder:
 
     def _encode_parity(self, clue: ClueData) -> List[List[int]]:
         parity = ParityType(clue.params["parity_type"])
-        region = Region.from_dict(clue.params["region"])
+        region = self._get_region(clue)
         char_ids = resolve_region_characters(region, self.characters, self.grid_size)
         vars_list = [self.var_mgr.get_var(cid) for cid in char_ids]
         
