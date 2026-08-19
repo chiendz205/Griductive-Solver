@@ -33,3 +33,8 @@ dist/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Intermediate HTML produced by tools/build_report_pdf.py.
+# The generated docs/*.pdf files ARE committed (they are graded deliverables).
+docs/Report.html
+docs/AIreport.html

@@ -1,0 +1,196 @@
+"""
+Experiment / benchmark harness for Griductive Solver.
+
+Runs the AI Logic Agent over every puzzle in data/ and reports REAL, reproducible
+performance metrics for each one:
+
+    - grid size N and number of main propositional variables (N^2)
+    - number of auxiliary variables and CNF clauses (full-puzzle encoding)
+    - number of deduction steps taken to fully solve the board
+    - number of SAT solver queries issued (including exploratory classifications)
+    - aggregate DPLL statistics: decisions, unit propagations, backtracks
+    - uniqueness of the puzzle solution (independent model-enumeration check)
+    - total solver runtime in milliseconds (machine-dependent, indicative only)
+
+Usage (from the project root):
+    py -3 experiments/benchmark.py
+    py -3 -m experiments.benchmark
+
+Outputs a console table and writes docs/experiment_results.md and
+docs/experiment_results.csv so the report always reflects measured numbers.
+"""
+
+import os
+import sys
+import glob
+import csv
+
+# Make sure the project root is importable and is the working directory
+# (the GameEngine loads data/puzzle_schema.json via a relative path).
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+os.chdir(PROJECT_ROOT)
+
+from griductive.engine.game_engine import GameEngine
+from griductive.agent.logic_agent import LogicAgent
+
+DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+DOCS_DIR = os.path.join(PROJECT_ROOT, "docs")
+
+
+def discover_puzzles():
+    files = sorted(glob.glob(os.path.join(DATA_DIR, "puzzle_*.json")))
+    return [f for f in files if os.path.basename(f) != "puzzle_schema.json"]
+
+
+def benchmark_puzzle(path):
+    """Loads one puzzle, measures its CNF size, uniqueness, and full solve."""
+    engine = GameEngine()
+    engine.load_puzzle_json(path)
+    agent = LogicAgent(engine)
+
+    title = (engine._raw_json_data or {}).get("title", os.path.basename(path))
+    n = engine.get_grid_size()
+
+    # CNF size of the full puzzle (all clues) - deterministic and reproducible.
+    cnf = engine.get_full_cnf_metrics()
+
+    # Independent uniqueness check (model enumeration with blocking clauses).
+    is_unique, solution_count = engine.check_full_puzzle_uniqueness()
+
+    # Full step-by-step deduction. Each record already carries per-step totals.
+    trace = agent.run_full_deduction_loop(engine)
+
+    steps = len(trace)
+    sat_queries = sum(t.get("sat_queries", 0) for t in trace)
+    decisions = sum(t.get("decisions", 0) for t in trace)
+    propagations = sum(t.get("propagations", 0) for t in trace)
+    backtracks = sum(t.get("backtracks", 0) for t in trace)
+    runtime_ms = sum(t.get("runtime_ms", 0.0) for t in trace)
+    solved_fully = (steps == cnf["main_vars"])
+
+    return {
+        "filename": os.path.basename(path),
+        "title": title,
+        "n": n,
+        "main_vars": cnf["main_vars"],
+        "aux_vars": cnf["aux_vars"],
+        "clauses": cnf["clauses"],
+        "steps": steps,
+        "sat_queries": sat_queries,
+        "decisions": decisions,
+        "propagations": propagations,
+        "backtracks": backtracks,
+        "is_unique": is_unique,
+        "solution_count": solution_count,
+        "solved_fully": solved_fully,
+        "runtime_ms": runtime_ms,
+    }
+
+
+# Column layout shared by the console and markdown renderers.
+COLUMNS = [
+    ("filename", "Puzzle", "l"),
+    ("grid", "Grid", "c"),
+    ("main_vars", "Main vars", "r"),
+    ("aux_vars", "Aux vars", "r"),
+    ("clauses", "CNF clauses", "r"),
+    ("steps", "Steps", "r"),
+    ("sat_queries", "SAT queries", "r"),
+    ("decisions", "Decisions", "r"),
+    ("propagations", "Propagations", "r"),
+    ("backtracks", "Backtracks", "r"),
+    ("unique", "Unique", "c"),
+    ("runtime_ms", "Runtime (ms)", "r"),
+]
+
+
+def render_cell(row, key):
+    if key == "grid":
+        return f"{row['n']}x{row['n']}"
+    if key == "unique":
+        return "Yes (1)" if row["is_unique"] else f"No ({row['solution_count']})"
+    if key == "runtime_ms":
+        return f"{row['runtime_ms']:.2f}"
+    return str(row[key])
+
+
+def print_console_table(rows):
+    headers = [h for _, h, _ in COLUMNS]
+    table = [[render_cell(r, k) for k, _, _ in COLUMNS] for r in rows]
+    widths = [len(h) for h in headers]
+    for line in table:
+        for i, cell in enumerate(line):
+            widths[i] = max(widths[i], len(cell))
+
+    def fmt(cells):
+        return " | ".join(c.ljust(widths[i]) for i, c in enumerate(cells))
+
+    print(fmt(headers))
+    print("-+-".join("-" * w for w in widths))
+    for line in table:
+        print(fmt(line))
+
+
+def write_markdown(rows, out_path):
+    aligns = {"l": ":---", "c": ":---:", "r": "---:"}
+    headers = [h for _, h, _ in COLUMNS]
+    sep = [aligns[a] for _, _, a in COLUMNS]
+    lines = ["# Griductive Solver — Experiment Results", ""]
+    lines.append("Auto-generated by `experiments/benchmark.py`. Runtime is machine-dependent.")
+    lines.append("")
+    lines.append("| " + " | ".join(headers) + " |")
+    lines.append("| " + " | ".join(sep) + " |")
+    for r in rows:
+        cells = [render_cell(r, k) for k, _, _ in COLUMNS]
+        # Wrap the puzzle filename in backticks for the markdown table.
+        cells[0] = f"`{cells[0]}`"
+        lines.append("| " + " | ".join(cells) + " |")
+    lines.append("")
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+
+
+def write_csv(rows, out_path):
+    keys = ["filename", "title", "n", "main_vars", "aux_vars", "clauses", "steps",
+            "sat_queries", "decisions", "propagations", "backtracks",
+            "is_unique", "solution_count", "solved_fully", "runtime_ms"]
+    with open(out_path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=keys)
+        writer.writeheader()
+        for r in rows:
+            writer.writerow({k: r[k] for k in keys})
+
+
+def main():
+    puzzles = discover_puzzles()
+    if not puzzles:
+        print("No puzzles found in data/.")
+        return 1
+
+    rows = []
+    for path in puzzles:
+        print(f"Benchmarking {os.path.basename(path)} ...")
+        rows.append(benchmark_puzzle(path))
+
+    print()
+    print_console_table(rows)
+
+    os.makedirs(DOCS_DIR, exist_ok=True)
+    md_path = os.path.join(DOCS_DIR, "experiment_results.md")
+    csv_path = os.path.join(DOCS_DIR, "experiment_results.csv")
+    write_markdown(rows, md_path)
+    write_csv(rows, csv_path)
+
+    all_solved = all(r["solved_fully"] for r in rows)
+    all_unique = all(r["is_unique"] for r in rows)
+    print()
+    print(f"Solved fully: {sum(r['solved_fully'] for r in rows)}/{len(rows)} puzzles"
+          f"  |  Unique solutions: {sum(r['is_unique'] for r in rows)}/{len(rows)}")
+    print(f"Wrote {os.path.relpath(md_path, PROJECT_ROOT)} and {os.path.relpath(csv_path, PROJECT_ROOT)}")
+    return 0 if (all_solved and all_unique) else 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

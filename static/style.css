@@ -281,6 +281,28 @@ body {
     border: 1px solid var(--border-color);
 }
 
+/* Row / Column Axis Labels */
+.axis-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-code);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary-cyan);
+    opacity: 0.7;
+    user-select: none;
+}
+
+.axis-col {
+    /* Column letters sit just above the first board row. */
+    padding-bottom: 2px;
+}
+
+.axis-corner {
+    /* Empty spacer at the top-left intersection of the two axes. */
+}
+
 /* Character Card */
 .char-card {
     background: #131b2a;
@@ -456,6 +478,22 @@ body {
     background: rgba(255, 214, 0, 0.05);
 }
 
+/* Pinned clue: region stays highlighted until unpinned */
+.clue-item.clue-pinned {
+    border-color: var(--accent-warning);
+    background: rgba(255, 214, 0, 0.1);
+    box-shadow: 0 0 12px rgba(255, 214, 0, 0.25);
+}
+
+.clue-item.clue-pinned::after {
+    content: '📌 pinned';
+    display: block;
+    font-family: var(--font-code);
+    font-size: 10px;
+    color: var(--accent-warning);
+    margin-top: 6px;
+}
+
 .clue-item-header {
     display: flex;
     justify-content: space-between;
@@ -498,6 +536,28 @@ body {
 
 .trace-step {
     color: var(--primary-cyan);
+}
+
+.trace-msg {
+    line-height: 1.4;
+}
+
+/* Trace metadata: active clue ids, KB size, SAT queries */
+.trace-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    margin-top: 6px;
+    font-family: var(--font-code);
+    font-size: 10px;
+    color: var(--accent-warning);
+}
+
+.trace-meta span {
+    background: rgba(255, 214, 0, 0.08);
+    border: 1px solid rgba(255, 214, 0, 0.2);
+    border-radius: 4px;
+    padding: 2px 6px;
 }
 
 .trace-stats {

@@ -3,6 +3,7 @@
   "title": "GriductivePuzzleSchema",
   "type": "object",
   "required": ["grid_size", "characters", "clues"],
+  "additionalProperties": false,
   "properties": {
     "title": { "type": "string" },
     "grid_size": {
@@ -12,13 +13,15 @@
     },
     "characters": {
       "type": "array",
+      "minItems": 9,
       "items": {
         "type": "object",
         "required": ["id", "name", "job", "row", "col", "true_status"],
+        "additionalProperties": false,
         "properties": {
-          "id": { "type": "string" },
-          "name": { "type": "string" },
-          "job": { "type": "string" },
+          "id": { "type": "string", "pattern": "^[A-E][1-5]$" },
+          "name": { "type": "string", "minLength": 1 },
+          "job": { "type": "string", "minLength": 1 },
           "row": { "type": "integer", "minimum": 1, "maximum": 5 },
           "col": { "type": "integer", "minimum": 1, "maximum": 5 },
           "true_status": { "type": "string", "enum": ["CRIMINAL", "INNOCENT"] }
@@ -30,16 +33,141 @@
       "items": {
         "type": "object",
         "required": ["id", "type", "params", "description", "owner_id"],
+        "additionalProperties": false,
         "properties": {
-          "id": { "type": "string" },
+          "id": { "type": "string", "minLength": 1 },
           "type": {
             "type": "string",
             "enum": ["FACT", "SAME", "DIFFERENT", "EXACTLY", "AT_LEAST", "AT_MOST", "PARITY", "BETWEEN"]
           },
-          "owner_id": { "type": "string" },
+          "owner_id": { "type": "string", "pattern": "^[A-E][1-5]$" },
           "is_initially_revealed": { "type": "boolean" },
-          "description": { "type": "string" },
+          "description": { "type": "string", "minLength": 1 },
           "params": { "type": "object" }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "type": { "const": "FACT" } }, "required": ["type"] },
+            "then": {
+              "properties": {
+                "params": {
+                  "type": "object",
+                  "required": ["person"],
+                  "properties": {
+                    "person": { "$ref": "#/definitions/characterId" },
+                    "status": { "$ref": "#/definitions/status" },
+                    "person_status": { "$ref": "#/definitions/status" }
+                  },
+                  "anyOf": [
+                    { "required": ["status"] },
+                    { "required": ["person_status"] }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": { "type": { "enum": ["SAME", "DIFFERENT"] } },
+              "required": ["type"]
+            },
+            "then": {
+              "properties": {
+                "params": {
+                  "type": "object",
+                  "required": ["person1", "person2"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "person1": { "$ref": "#/definitions/characterId" },
+                    "person2": { "$ref": "#/definitions/characterId" }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": { "type": { "enum": ["EXACTLY", "AT_LEAST", "AT_MOST"] } },
+              "required": ["type"]
+            },
+            "then": {
+              "properties": {
+                "params": {
+                  "type": "object",
+                  "required": ["region"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "k": { "type": "integer", "minimum": 0, "maximum": 25 },
+                    "count": { "type": "integer", "minimum": 0, "maximum": 25 },
+                    "region": { "$ref": "#/definitions/region" }
+                  },
+                  "anyOf": [
+                    { "required": ["k"] },
+                    { "required": ["count"] }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": { "properties": { "type": { "const": "PARITY" } }, "required": ["type"] },
+            "then": {
+              "properties": {
+                "params": {
+                  "type": "object",
+                  "required": ["parity_type", "region"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "parity_type": { "type": "string", "enum": ["EVEN", "ODD"] },
+                    "region": { "$ref": "#/definitions/region" }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": { "properties": { "type": { "const": "BETWEEN" } }, "required": ["type"] },
+            "then": {
+              "properties": {
+                "params": {
+                  "type": "object",
+                  "required": ["char1", "char2", "target_status"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "char1": { "$ref": "#/definitions/characterId" },
+                    "char2": { "$ref": "#/definitions/characterId" },
+                    "target_status": { "$ref": "#/definitions/status" }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "characterId": { "type": "string", "pattern": "^[A-E][1-5]$" },
+    "status": { "type": "string", "enum": ["CRIMINAL", "INNOCENT"] },
+    "region": {
+      "type": "object",
+      "required": ["type", "param"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["ROW", "COLUMN", "NEIGHBORS", "EXPLICIT", "BETWEEN_CELLS"]
+        },
+        "param": {
+          "oneOf": [
+            { "type": "integer", "minimum": 1, "maximum": 5 },
+            { "type": "string", "minLength": 1 },
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/definitions/characterId" }
+            }
+          ]
         }
       }
     }

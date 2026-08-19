@@ -1,0 +1,8 @@
+filename,title,n,main_vars,aux_vars,clauses,steps,sat_queries,decisions,propagations,backtracks,is_unique,solution_count,solved_fully,runtime_ms
+puzzle_01_3x3_easy.json,Case #1: The Detective's Inquiry (3x3 Easy),3,9,1,23,9,32,0,169,0,True,1,True,0.26859992067329586
+puzzle_02_3x3_hard.json,Case #2: The Midnight Masquerade (3x3 Hard),3,9,2,36,9,22,10,163,0,True,1,True,0.47060004726517946
+puzzle_03_4x4_easy.json,Case #3: The Architect's Blueprint (4x4 Easy),4,16,2,63,16,41,5,437,0,True,1,True,1.2762000260408968
+puzzle_04_4x4_medium.json,Case #4: The Metropolis Syndicate (4x4 Medium),4,16,4,66,16,40,16,502,0,True,1,True,1.8175999430241063
+puzzle_05_5x5_medium.json,Case #5: The Corporate Espionage (5x5 Medium),5,25,0,25,25,63,0,876,0,True,1,True,1.3692999782506377
+puzzle_06_5x5_expert.json,Case #6: The Grand Cipher Conspiracy (5x5 Expert),5,25,6,120,25,63,43,1114,0,True,1,True,6.586599964066409
+puzzle_07_3x3_neighbors.json,Case #7: Neighborhood Watch (3x3 Neighbors),3,9,0,132,9,29,30,197,0,True,1,True,1.4200000441633165

@@ -12,6 +12,7 @@ from griductive.core.models import (
 from griductive.core.var_map import VariableManager
 from griductive.engine.interfaces import PublicKBInterface
 from griductive.logic.cnf_encoder import CNFEncoder
+from griductive.logic.clues import validate_clue_semantics
 from griductive.logic.dpll import DPLLSolver
 
 
@@ -72,6 +73,38 @@ class GameEngine(PublicKBInterface):
             self._clues[clue.id] = clue
             if clue.owner_id in self._characters:
                 self._characters[clue.owner_id].clue_ids.append(clue.id)
+
+        # Deep semantic validation of every clue's params (beyond JSON schema).
+        self._validate_puzzle_semantics()
+
+    def _validate_puzzle_semantics(self):
+        """
+        Validates the loaded puzzle beyond the JSON schema: character coordinates
+        must be inside the grid and unique, clue owners must exist, and every
+        clue's params must match its type (checked by validate_clue_semantics).
+        Raises ValueError on the first problem found.
+        """
+        n = self._grid_size
+        seen_coords = {}
+        for char in self._characters.values():
+            if not (1 <= char.row <= n) or not (1 <= char.col <= n):
+                raise ValueError(
+                    f"Character '{char.id}' has out-of-range coordinate "
+                    f"(row={char.row}, col={char.col}) for a {n}x{n} grid."
+                )
+            coord = (char.row, char.col)
+            if coord in seen_coords:
+                raise ValueError(
+                    f"Characters '{seen_coords[coord]}' and '{char.id}' share the "
+                    f"same cell (row={char.row}, col={char.col})."
+                )
+            seen_coords[coord] = char.id
+
+        char_ids = set(self._characters.keys())
+        for clue in self._clues.values():
+            if clue.owner_id not in char_ids:
+                raise ValueError(f"Clue '{clue.id}' has unknown owner_id '{clue.owner_id}'.")
+            validate_clue_semantics(clue, char_ids, n)
 
     def restart(self):
         """Restores puzzle to initial starting state."""
@@ -211,18 +244,34 @@ class GameEngine(PublicKBInterface):
 
     # --- Full Secret Uniqueness Check ---
 
+    def _encode_full_puzzle(self) -> Tuple[VariableManager, Any]:
+        """Encodes ALL clues (including hidden ones) into a single CNF formula."""
+        all_chars = self._characters
+        char_list = list(all_chars.values())
+        var_mgr = VariableManager(char_list)
+        encoder = CNFEncoder(var_mgr, all_chars, self._grid_size)
+        encoding_res = encoder.encode_clues(list(self._clues.values()))
+        return var_mgr, encoding_res
+
+    def get_full_cnf_metrics(self) -> Dict[str, int]:
+        """
+        Returns the CNF size of the complete puzzle (all clues encoded together).
+        Deterministic and reproducible - used by the experiment benchmark.
+        """
+        var_mgr, encoding_res = self._encode_full_puzzle()
+        return {
+            "main_vars": encoding_res.main_vars_count,
+            "aux_vars": encoding_res.aux_vars_count,
+            "total_vars": encoding_res.total_vars_count,
+            "clauses": encoding_res.clauses_count,
+        }
+
     def check_full_puzzle_uniqueness(self) -> Tuple[bool, int]:
         """
         Independent check: counts total satisfying assignments for ALL clues combined.
         Returns (is_unique, solution_count).
         """
-        all_chars = self._characters
-        char_list = list(all_chars.values())
-        var_mgr = VariableManager(char_list)
-        encoder = CNFEncoder(var_mgr, all_chars, self._grid_size)
-
-        all_clues = list(self._clues.values())
-        encoding_res = encoder.encode_clues(all_clues)
+        var_mgr, encoding_res = self._encode_full_puzzle()
         clauses = list(encoding_res.clauses)
 
         solver = DPLLSolver()

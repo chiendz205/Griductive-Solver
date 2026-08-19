@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let revealedClues = [];
     let selectedCharId = null;
     let hintData = null;
+    let pinnedClueId = null;
 
     // DOM Elements
     const puzzleSelect = document.getElementById('puzzle-select');
@@ -146,10 +147,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderBoard() {
-        gridContainer.style.gridTemplateColumns = `repeat(${currentGridSize}, 1fr)`;
+        // Leading column for row numbers + N columns for the board.
+        gridContainer.style.gridTemplateColumns = `36px repeat(${currentGridSize}, 1fr)`;
         gridContainer.innerHTML = '';
 
+        // Top-left corner spacer.
+        const corner = document.createElement('div');
+        corner.className = 'axis-corner';
+        gridContainer.appendChild(corner);
+
+        // Column axis labels (A, B, C, ...).
+        for (let c = 1; c <= currentGridSize; c++) {
+            const colLabel = document.createElement('div');
+            colLabel.className = 'axis-label axis-col';
+            colLabel.textContent = String.fromCharCode(64 + c);
+            gridContainer.appendChild(colLabel);
+        }
+
         for (let r = 1; r <= currentGridSize; r++) {
+            // Row axis label (1, 2, 3, ...).
+            const rowLabel = document.createElement('div');
+            rowLabel.className = 'axis-label axis-row';
+            rowLabel.textContent = r;
+            gridContainer.appendChild(rowLabel);
+
             for (let c = 1; c <= currentGridSize; c++) {
                 const charId = `${String.fromCharCode(64 + c)}${r}`;
                 const char = charactersMap[charId];
@@ -185,6 +206,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderClues() {
         cluesList.innerHTML = '';
         clueCountBadge.textContent = `${revealedClues.length} Clues`;
+        pinnedClueId = null;
+        clearRegionHighlights();
 
         if (revealedClues.length === 0) {
             cluesList.innerHTML = '<div class="empty-state">No revealed clues yet.</div>';
@@ -194,7 +217,8 @@ document.addEventListener('DOMContentLoaded', () => {
         revealedClues.forEach(clue => {
             const item = document.createElement('div');
             item.className = 'clue-item';
-            
+            item.dataset.clueId = clue.id;
+
             const owner = charactersMap[clue.owner_id];
             const ownerName = owner ? owner.name : clue.owner_id;
 
@@ -206,9 +230,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="clue-desc">${clue.description}</div>
             `;
 
-            // Highlight referenced region cells on hover / click
+            // Hover previews the region; click pins it so it stays highlighted.
             item.addEventListener('mouseenter', () => highlightClueRegion(clue));
-            item.addEventListener('mouseleave', clearRegionHighlights);
+            item.addEventListener('mouseleave', () => {
+                clearRegionHighlights();
+                if (pinnedClueId) {
+                    const pinned = revealedClues.find(c => c.id === pinnedClueId);
+                    if (pinned) highlightClueRegion(pinned);
+                }
+            });
+            item.addEventListener('click', () => {
+                if (pinnedClueId === clue.id) {
+                    pinnedClueId = null;
+                    item.classList.remove('clue-pinned');
+                    clearRegionHighlights();
+                } else {
+                    pinnedClueId = clue.id;
+                    document.querySelectorAll('.clue-item.clue-pinned')
+                        .forEach(el => el.classList.remove('clue-pinned'));
+                    item.classList.add('clue-pinned');
+                    highlightClueRegion(clue);
+                }
+            });
 
             cluesList.appendChild(item);
         });
@@ -239,12 +282,12 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (region.type === 'EXPLICIT') {
                 targetIds = region.param;
             } else if (region.type === 'NEIGHBORS') {
-                const centerId = params.target_id || clue.owner_id;
+                const centerId = region.param || params.target_id || clue.owner_id;
                 const centerChar = charactersMap[centerId];
                 if (centerChar) {
                     Object.values(charactersMap).forEach(c => {
-                        if (c.id !== centerId && 
-                            Math.abs(c.row - centerChar.row) <= 1 && 
+                        if (c.id !== centerId &&
+                            Math.abs(c.row - centerChar.row) <= 1 &&
                             Math.abs(c.col - centerChar.col) <= 1) {
                             targetIds.push(c.id);
                         }
@@ -343,6 +386,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="margin-bottom: 12px; background: rgba(255, 255, 255, 0.05); padding: 8px; border-radius: 4px;">
                     <strong>🔍 Relevant Clues to Consider:</strong><br>
                     ${cluesHtml}
+                </div>
+                <div class="trace-meta" style="margin-bottom: 10px;">
+                    <span title="Clue identifiers that force this deduction">🔑 Clue IDs: ${(hintData.relevant_clue_ids && hintData.relevant_clue_ids.length) ? hintData.relevant_clue_ids.join(', ') : '—'}</span>
+                    <span title="SAT solver calls used to prove this character">🧮 SAT queries: ${hintData.sat_queries != null ? hintData.sat_queries : '?'}</span>
                 </div>
                 <div id="hint-peek-container" style="margin-top: 10px;">
                     <button id="btn-peek-hint" class="btn btn-secondary" style="font-size: 11px; padding: 4px 8px; border: 1px solid rgba(255,255,255,0.2);">👁 Peek Answer</button>
@@ -463,6 +510,13 @@ document.addEventListener('DOMContentLoaded', () => {
             traceList.innerHTML = '';
         }
 
+        const relevant = (stepRes.relevant_clue_ids && stepRes.relevant_clue_ids.length)
+            ? stepRes.relevant_clue_ids.join(', ') : '—';
+        const active = (stepRes.active_clue_ids && stepRes.active_clue_ids.length)
+            ? stepRes.active_clue_ids.length : 0;
+        const satQ = (stepRes.sat_queries != null) ? stepRes.sat_queries : '?';
+        const examined = (stepRes.characters_examined != null) ? stepRes.characters_examined : '?';
+
         const item = document.createElement('div');
         item.className = 'trace-item';
         item.innerHTML = `
@@ -470,7 +524,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="trace-step">Step ${stepRes.step || '#'}: ${stepRes.character_name} (${stepRes.coord})</span>
                 <span style="color: var(--primary-cyan);">${stepRes.forced_status}</span>
             </div>
-            <div>${stepRes.message}</div>
+            <div class="trace-msg">${stepRes.message}</div>
+            <div class="trace-meta">
+                <span title="Clues that force this deduction">🔑 Active clues: ${relevant}</span>
+                <span title="Total clues in the public KB">📚 KB size: ${active}</span>
+                <span title="SAT solver calls this step (incl. exploration)">🧮 SAT queries: ${satQ}</span>
+                <span title="Characters tested this step">🔎 Examined: ${examined}</span>
+            </div>
             <div class="trace-stats">${stepRes.solver_stats}</div>
         `;
         traceList.prepend(item);

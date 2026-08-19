@@ -1,4 +1,11 @@
+# Core runtime dependencies
 flask>=2.0.0
-pytest>=7.0.0
 jsonschema>=4.0.0
+
+# Testing
+pytest>=7.0.0
 pytest-cov>=4.0.0
+
+# Report tooling: converts docs/Report.md -> docs/Report.pdf
+# (tools/build_report_pdf.py). Optional but needed to regenerate the PDF.
+markdown>=3.4.0

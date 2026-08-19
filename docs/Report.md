@@ -1,190 +1,166 @@
-# BÁO CÁO ĐỒ ÁN: GRIDUCTIVE SOLVER
-## HỆ THỐNG SUY LUẬN LOGIC VÀ DPLL SAT AGENT TỰ ĐỘNG
-**Môn học:** Nhập môn Trí tuệ Nhân tạo (CSC14003)
-**Thành viên thực hiện:** Ngô Trung Nghĩa & Nguyễn Công Chiến  
-**Repository GitHub:** https://github.com/chiendz205/Griductive-Solver  
-**Demo Video:** https://drive.google.com/drive/folders/griductive-demo  
+# GRIDUCTIVE SOLVER PROJECT REPORT
+## Logic Inference System and Automatic DPLL SAT Agent
 
-## 1: TỔNG QUAN ĐỀ TÀI & PHÂN CÔNG CÔNG VIỆC
+**Course:** Introduction to Artificial Intelligence
 
-### 1.1. Giới thiệu Bài toán Griductive
-Griductive là một trò chơi giải đố suy luận logic dạng lưới vuông kích thước $N \times N$ ($N \in \{3, 4, 5\}$). Trên mỗi ô của lưới tọa độ $(r, c)$ có một nhân vật xác định. Mỗi nhân vật nắm giữ một trạng thái bí mật (Secret True Status) thuộc một trong hai giá trị Boolean:
-- **CRIMINAL** (Tội phạm - tương ứng với chân trị `True` / $1$)
-- **INNOCENT** (Vô tội - tương ứng với chân trị `False` / $0$)
 
-Mỗi nhân vật đồng thời sở hữu một hoặc nhiều manh mối (Clues). Ban đầu, chỉ một số manh mối ban đầu được công khai (Initially Revealed Clues). Người chơi (hoặc AI Agent) phải dựa trên các manh mối công khai hiện tại để suy luận logic chặt chẽ (Entailment) xem nhân vật nào bị ép buộc phải là CRIMINAL hoặc INNOCENT. 
+**Students**: 23127331 Nguyen Cong Chien & 19127484 Ngo Trung Nghia
 
-Khi một verdict chính xác được đưa ra và chấp nhận (ACCEPTED), nhân vật đó sẽ công khai trạng thái và đồng thời tiết lộ thêm các manh mối do nhân vật đó nắm giữ, tạo thành một chu trình suy luận từng bước (Deduction Loop) cho đến khi toàn bộ bảng câu đố được giải mã hoàn toàn.
 
-### 1.2. Bảng Phân công Công việc Nhóm (2 Thành viên)
+**Repository:** https://github.com/chiendz205/Griductive-Solver
 
-| Thành viên | Trách nhiệm chính & Deliverables | Tỷ lệ Hoàn thành |
+
+**Demo video:** See `docs/DEMO_VIDEO.md` for the submission link and recording script.
+
+## 1. PROJECT OVERVIEW AND RESPONSIBILITIES
+
+### 1.1. The Griductive puzzle
+Griductive is a square-grid logic puzzle for boards of size $N \times N$, where $N \in \{3,4,5\}$. Each coordinate $(r,c)$ contains one character with a hidden Boolean status: `CRIMINAL` (`True`/1) or `INNOCENT` (`False`/0). Characters own clues, but only initially revealed clues are public. A player or agent must use the current public knowledge base to prove whether a character is forced to be criminal or innocent.
+
+When an accepted verdict is submitted, the character's status and owned clues become public. This creates a deduction loop that continues until the board is solved or no further entailment is possible.
+
+### 1.2. Team responsibilities
+| Member | Main responsibilities and deliverables | Completion |
 | :--- | :--- | :---: |
-| **Ngô Trung Nghĩa** | • Mô hình hóa Logic Mệnh đề & CNF Encoder (8 loại clue cốt lõi và mở rộng)<br/>• Bộ giải DPLL SAT Solver thuần Python (Unit Propagation, DLCS heuristic, Backtracking)<br/>• Thuật toán kiểm tra Entailment ($KB \models \alpha$) và kiểm tra tính duy nhất (Uniqueness Check)<br/>• Hệ thống kiểm thử tự động Pytest (50 unit tests, 91% code coverage) | **100%** |
-| **Nguyễn Công Chiến** | • Thiết kế kiến trúc GameEngine và cô lập bảo mật qua `PublicKBInterface`<br/>• Xây dựng AI Logic Agent & Chu trình suy luận tự động (Deduction Loop)<br/>• Tính năng Smart Hint kèm trích xuất giải thích tự nhiên và thông số DPLL<br/>• Thiết kế Giao diện Web GUI (Flask REST API, Dark Theme Glassmorphism, Region Highlight)<br/>• Thực nghiệm benchmark hiệu năng trên các bộ câu đố $3\times3, 4\times4, 5\times5$ và tài liệu báo cáo | **100%** |
+| **Ngo Trung Nghia** | Propositional model and CNF encoder; pure-Python DPLL solver; entailment and uniqueness checks; two-layer validation; pytest suite | **100%** |
+| **Nguyen Cong Chien** | Secure `GameEngine` and `PublicKBInterface`; logic agent and deduction trace; smart hints; Flask GUI and REST API; benchmark experiments and documentation | **100%** |
 
----
+## 2. PROPOSITIONAL KNOWLEDGE REPRESENTATION
 
-## 2: BIỂU DIỄN TRI THỨC BẰNG LOGIC MỆNH ĐỀ (PROPOSITIONAL LOGIC)
+### 2.1. Variable manager
+Each character $i$ maps deterministically to a main variable $C_i$. $C_i=1$ means `CRIMINAL`; $C_i=0$ means `INNOCENT`. IDs are assigned in deterministic lexical order. Auxiliary variables start at $N^2+1$ and are used by parity and scalable cardinality encodings.
 
-### 2.1. Quản lý Biến Mệnh đề (Variable Manager)
-Để biểu diễn trạng thái của $N \times N$ ô trong lưới, hệ thống ánh xạ mỗi nhân vật $i$ sang một biến mệnh đề chính (Main Propositional Variable) $C_i$:
-- $C_i = 1$ ($\text{True}$) $\iff$ Nhân vật $i$ là **CRIMINAL**.
-- $\neg C_i = 1$ ($C_i = 0 / \text{False}$) $\iff$ Nhân vật $i$ là **INNOCENT**.
-
-Việc ánh xạ biến được thực hiện một cách xác định (Deterministic Mapping) theo thứ tự từ điển của mã nhân vật (A1, A2, ..., C3).
-Đối với các ràng buộc phức tạp (Cardinality, Parity), hệ thống sử dụng cơ chế cấp phát biến phụ (Auxiliary Variables) $A_k$ bắt đầu từ chỉ số $N^2 + 1$ để giữ nguyên tính chuẩn tắc CNF mà không làm bùng nổ số lượng mệnh đề con.
-
-### 2.2. Quy tắc Chuyển đổi 8 Loại Manh mối sang CNF (CNF Encoding Rules)
-
-Hệ thống hỗ trợ 6 loại manh mối cốt lõi và 2 loại manh mối mở rộng:
-
-| Loại Clue | Cấu trúc Tham số | Ý nghĩa Logic | Mệnh đề CNF tương đương |
+### 2.2. CNF encoding rules
+| Clue | Parameters | Meaning | CNF form |
 | :--- | :--- | :--- | :--- |
-| **FACT** | `person`, `status` | Xác nhận trạng thái cụ thể của 1 người | $[C_i]$ (nếu CRIMINAL) hoặc $[\neg C_i]$ (nếu INNOCENT) |
-| **SAME** | `person1`, `person2` | Hai người cùng trạng thái ($C_1 \leftrightarrow C_2$) | $[\neg C_1, C_2] \land [C_1, \neg C_2]$ |
-| **DIFFERENT** | `person1`, `person2` | Hai người khác trạng thái ($C_1 \oplus C_2$) | $[C_1, C_2] \land [\neg C_1, \neg C_2]$ |
-| **EXACTLY** | $k$, `region` | Đúng $k$ người trong vùng là CRIMINAL | $\text{AtMost}(k, V) \land \text{AtLeast}(k, V)$ |
-| **AT_LEAST** | $k$, `region` | Ít nhất $k$ người trong vùng là CRIMINAL | Mọi tập con $(n - k + 1)$ biến phải có $\ge 1$ biến True |
-| **AT_MOST** | $k$, `region` | Nhiều nhất $k$ người trong vùng là CRIMINAL | Mọi tập con $(k + 1)$ biến không thể đồng thời True |
-| **PARITY** | `EVEN`/`ODD`, `region` | Tổng số criminal trong vùng là Chẵn / Lẻ | Chuỗi XOR qua các biến phụ $A_j$: $A_j \leftrightarrow (A_{j-1} \oplus V_j)$ |
-| **BETWEEN** | `char1`, `char2`, `status` | Tất cả ô nằm giữa 2 nhân vật mang trạng thái | Unit clauses trực tiếp cho các ô trung gian trên cùng hàng/cột |
+| `FACT` | `person`, `status` | Fixed status | $[C_i]$ or $[\neg C_i]$ |
+| `SAME` | `person1`, `person2` | Equal statuses | $[\neg C_1,C_2] \land [C_1,\neg C_2]$ |
+| `DIFFERENT` | `person1`, `person2` | Different statuses | $[C_1,C_2] \land [\neg C_1,\neg C_2]$ |
+| `EXACTLY` | $k$, `region` | Exactly $k$ criminals | `AtMost(k,V) and AtLeast(k,V)` |
+| `AT_LEAST` | $k$, `region` | At least $k$ criminals | Every $(n-k+1)$-subset contains a true variable |
+| `AT_MOST` | $k$, `region` | At most $k$ criminals | Every $(k+1)$-subset cannot all be true |
+| `PARITY` | `EVEN`/`ODD`, `region` | Even or odd count | Auxiliary-variable XOR chain |
+| `BETWEEN` | `char1`, `char2`, `status` | Intermediate cells have a status | Unit clauses for cells between aligned characters |
 
-### 2.3. Mã hóa Ràng buộc Số lượng (Cardinality Encoding)
-- **Combinatorial Subset Encoding (cho $n \le 10$):**
-  - $\text{AtMost}(k, V)$: Với mọi tập con $S \subseteq V$ có kích thước $|S| = k + 1$, thêm mệnh đề $[\neg v_1, \neg v_2, \dots, \neg v_{k+1}]$.
-  - $\text{AtLeast}(k, V)$: Với mọi tập con $S \subseteq V$ có kích thước $|S| = n - k + 1$, thêm mệnh đề $[v_1, v_2, \dots, v_{n-k+1}]$.
-- **Sequential Counter Encoding (cho $n > 10$):**
-  - Sử dụng ma trận biến phụ $S_{i, j}$ biểu diễn bộ đếm nhị phân lũy tiến, đảm bảo số mệnh đề sinh ra chỉ tăng tuyến tính $\mathcal{O}(n \cdot k)$ thay vì tổ hợp mũ $\mathcal{O}\binom{n}{k+1}$.
+For regions with at most ten variables, combinatorial subset encoding is simple and compact. Larger regions use a sequential-counter encoding with $O(nk)$ clauses instead of $O(\binom{n}{k+1})$ clauses.
 
----
+### 2.3. Representative CNF derivations
+For `SAME(A1,B1)`, the logical equivalence $C_{A1} \leftrightarrow C_{B1}$ becomes:
 
-## 3: THUẬT TOÁN DPLL SAT SOLVER TỰ XÂY DỰNG
+$$ (\neg C_{A1} \lor C_{B1}) \land (C_{A1} \lor \neg C_{B1}). $$
 
-Thuật toán DPLL trong `griductive/logic/dpll.py` là bộ giải SAT kinh điển được tối ưu hóa cho bài toán suy luận logic:
+For `AT_MOST(1, [A1,B1,C1])`, every pair must not be simultaneously criminal:
 
+$$ (\neg C_{A1} \lor \neg C_{B1}) \land (\neg C_{A1} \lor \neg C_{C1}) \land (\neg C_{B1} \lor \neg C_{C1}). $$
+
+`EXACTLY(1,R)` is the conjunction of this `AtMost(1,R)` encoding and `AtLeast(1,R)`, where the latter contributes one clause containing every variable in $R$. All active clues are encoded programmatically; no test puzzle has a hand-written CNF formula.
+
+## 3. PURE-PYTHON DPLL SAT SOLVER
+
+The solver in `griductive/logic/dpll.py` performs unit propagation to a fixed point, detects empty clauses, returns a model when all clauses are satisfied, and otherwise branches on a variable selected by DLCS. It supports assumptions and records `decisions`, `propagations`, `backtracks`, and `runtime_ms`.
+
+The entailment test follows $KB \models \alpha \iff KB \land \neg\alpha$ is UNSAT. Therefore, proving `CRIMINAL` checks $KB \land \neg C_i$; proving `INNOCENT` checks $KB \land C_i$.
+
+### 3.1. DPLL pseudocode
+```text
+DPLL(clauses, assignment):
+    propagate unit clauses until a fixed point
+    if an empty clause exists: return UNSAT
+    if no clauses remain: return SAT with assignment
+    choose an unassigned variable by DLCS
+    try the variable as True; if SAT, return the model
+    increment backtracks and try it as False
+    return the second result
 ```
-Function DPLL(Clauses, Assignment, Variables):
-    1. (Clauses, Assignment) = Unit_Propagation(Clauses, Assignment)
-    2. If Clauses chứa Mệnh đề Rỗng (Empty Clause []):
-           Return (UNSAT, None)
-    3. If Clauses là Rỗng (All Clauses Satisfied):
-           Return (SAT, Assignment)
-    4. V = Choose_Variable_DLCS(Clauses, Variables)
-    5. // Nhánh 1: Thử V = True
-       (Result, Model) = DPLL(Clauses ∪ {[V]}, Assignment ∪ {V: True})
-       If Result == SAT: Return (SAT, Model)
-    6. // Nhánh 2: Backtrack, Thử V = False
-       (Result, Model) = DPLL(Clauses ∪ {[-V]}, Assignment ∪ {V: False})
-       Return (Result, Model)
+
+The solver copies clause state at each recursive branch, so backtracking cannot mutate sibling branches. Assumptions are temporary literals applied before propagation.
+
+## 4. SECURE ARCHITECTURE AND GAME ENGINE
+
+`GameEngine` stores `true_status` and hidden clues. `PublicKBInterface` exposes only board size, copied public characters, revealed clues, and accepted verdicts. Public character copies replace `true_status` with `UNKNOWN`, preventing accidental information leakage.
+
+At deduction step $t$, the knowledge base is exactly:
+
+$$KB_t = CNF(\text{revealed clues at }t) \land \bigwedge_{(i,s)\in\text{proved verdicts}} \text{unit}(C_i=s).$$
+
+Hidden statuses and unrevealed clue contents are never included in $KB_t$. After an accepted verdict, the engine changes the character's `revealed_status`, reveals its owned clues, and the next step rebuilds $KB_{t+1}$.
+
+Verdicts are classified as `ACCEPTED`, `CONTRADICTED`, `NOT_PROVABLE`, or `INCONSISTENT`. Only an accepted, logically forced verdict reveals the character and its clues.
+
+## 5. LOGIC AGENT AND DEDUCTION LOOP
+
+The agent scans unrevealed characters in deterministic row-major order, classifies each with entailment, submits the first forced verdict, refreshes the public knowledge base, and repeats. Each step records the character, forced status, relevant and active clue IDs, SAT query count, characters examined, DPLL telemetry, and newly revealed clues. `provide_hint()` uses only public data and returns `None` when no status is provable.
+
+Uniqueness is checked separately on the complete clue set. The solver first obtains one full model, then adds a blocking clause containing the opposite literal for every primary variable. A second SAT result means multiple assignments; UNSAT means exactly one assignment. Auxiliary variables are excluded from the blocking clause because uniqueness concerns character statuses only.
+
+## 6. WEB GUI, REST API, AND VALIDATION
+
+The Flask application provides `/`, `/api/puzzles`, `/api/load`, `/api/restart`, `/api/state`, `/api/verdict`, `/api/hint`, `/api/auto-step`, and `/api/auto-solve`. The GUI supports 3x3, 4x4, and 5x5 boards, coordinate labels, clue-region highlighting with pinning, status cards, and an AI deduction trace panel.
+
+Puzzle input is checked in two layers: Draft-07 JSON Schema validates structure, identifiers, and clue-specific parameters; `validate_clue_semantics` verifies referenced characters, owners, regions, coordinates, and duplicate cells against the actual puzzle.
+
+## 7. EXPERIMENTS, RESULTS, AND TESTING
+
+`experiments/benchmark.py` loads every puzzle, encodes all clues, checks uniqueness, runs the full agent loop, and writes `docs/experiment_results.md` and `.csv`.
+
+| Puzzle | Size | Main | Aux | Clauses | Steps | Queries | Decisions | Propagations | Backtracks | Time ms |
+| :--- | :---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `puzzle_01_3x3_easy` | 3x3 | 9 | 1 | 23 | 9 | 32 | 0 | 169 | 0 | 0.27 |
+| `puzzle_02_3x3_hard` | 3x3 | 9 | 2 | 36 | 9 | 22 | 10 | 163 | 0 | 0.47 |
+| `puzzle_03_4x4_easy` | 4x4 | 16 | 2 | 63 | 16 | 41 | 5 | 437 | 0 | 1.28 |
+| `puzzle_04_4x4_medium` | 4x4 | 16 | 4 | 66 | 16 | 40 | 16 | 502 | 0 | 1.82 |
+| `puzzle_05_5x5_medium` | 5x5 | 25 | 0 | 25 | 25 | 63 | 0 | 876 | 0 | 1.37 |
+| `puzzle_06_5x5_expert` | 5x5 | 25 | 6 | 120 | 25 | 63 | 43 | 1114 | 0 | 6.59 |
+| `puzzle_07_3x3_neighbors` | 3x3 | 9 | 0 | 132 | 9 | 29 | 30 | 197 | 0 | 1.42 |
+
+All seven puzzles were solved completely and had exactly one solution. Unit propagation performed most of the work. The test suite contains 63 passing tests and 91% coverage for `griductive`, covering API behavior, validation, engine statuses, agent security, sample puzzles, DPLL, clue geometry, and exhaustive CNF-versus-semantic evaluation.
+
+### 7.1. Observations, failure cases, and limitations
+
+- `puzzle_01` and `puzzle_05` required zero decisions: unit propagation alone solved the complete board.
+- Every benchmark case had zero backtracks. This reflects the strong constraints in the supplied puzzles; backtracking is still implemented and tested separately on UNSAT formulas.
+- `puzzle_07` generated 132 clauses on a 3x3 board because neighbor-region cardinality clues create many combinations. Clue structure therefore affects CNF size more strongly than board area.
+- The current sequential counter is available for larger regions, but the supplied game boards are at most 5x5. Performance beyond that scale has not been benchmarked.
+- Runtime is hardware-dependent and should be compared relatively, not treated as a fixed grading threshold.
+- The agent uses deterministic row-major scanning. A relevance-based variable or character priority could reduce exploratory SAT calls in future work.
+
+## 8. REPRODUCIBILITY
+
+```bash
+py -3 -m pip install -r requirements.txt
+py -3 -m pytest -q
+py -3 -m pytest -q --cov=griductive --cov-report=term
+py -3 experiments/benchmark.py
+py -3 app.py
+py -3 tools/build_report_pdf.py
 ```
 
-### Các Kỹ thuật Tối ưu Chính:
-1. **Unit Propagation (Lan truyền Mệnh đề Đơn vị):** Tìm các clause có kích thước 1 literal $[L]$. Gán giá trị bắt buộc cho literal đó và rút gọn công thức ngay lập tức. Quá trình này lặp lại liên tục (Fixed-point iteration) giúp loại bỏ tới 80% không gian tìm kiếm mà không cần phân nhánh.
-2. **DLCS Heuristic (Dynamic Largest Combined Sum):** Chọn biến $V$ xuất hiện nhiều nhất trong cả hai chiều dương và âm ($count(V) + count(\neg V)$) trong các clause chưa được thỏa mãn. Kỹ thuật này giúp phát hiện xung đột sớm nhất có thể.
-3. **Đo lường & Giám sát Hiệu năng (Telemetry):** Bộ giải thu thập đầy đủ 4 chỉ số:
-   - `decisions_count`: Số lần phải đoán biến và phân nhánh.
-   - `propagations_count`: Số lần lan truyền đơn vị thành công.
-   - `backtracks_count`: Số lần quay lui do gặp nhánh cụt.
-   - `runtime_ms`: Thời gian thực thi chính xác từng mili-giây.
+Deterministic metrics are reproducible across machines; runtime depends on hardware.
 
----
+## APPENDIX
 
-## 4: KIẾN TRÚC HỆ THỐNG & GAME ENGINE BẢO MẬT
+### GENERATIVE AI USAGE
 
-### 4.1. Phân tách Trách nhiệm (Separation of Concerns)
-- **`GameEngine` (Trọng tài):** Nắm giữ trạng thái bí mật (`true_status`) và danh sách toàn bộ manh mối ẩn. Khi người dùng hoặc Agent gửi một verdict, Engine sẽ kiểm tra tính đúng đắn dựa trên suy diễn logic từ cơ sở tri thức công khai hiện tại.
-- **`PublicKBInterface` (Giao diện Công khai):** Định nghĩa hợp đồng trừu tượng (Protocol) chỉ cho phép truy xuất:
-  - `get_grid_size()`: Kích thước bàn cờ.
-  - `get_public_characters()`: Danh sách nhân vật với trạng thái `revealed_status` (trạng thái `true_status` bị ẩn hoàn toàn thành `UNKNOWN`).
-  - `get_revealed_clues()`: Danh sách các manh mối đã được kích hoạt/lộ ra.
-  - `get_proven_verdicts()`: Lịch sử các phán quyết đã được chấp nhận.
+Generative AI was used to create the initial game, improve the user interface, fix errors, explain algorithms, provide installation instructions, and create a report template. The following prompts are reconstructed examples because the exact original prompts were not saved.
 
-### 4.2. Kiểm tra Kéo theo Logic (Entailment Verification)
-Khi nhận một phán quyết cho nhân vật $C_i$ với trạng thái đòi hỏi $S \in \{\text{CRIMINAL}, \text{INNOCENT}\}$:
-1. Engine thiết lập $KB_{public}$ hiện tại từ các manh mối đã lộ và các phán quyết đã chứng minh.
-2. Kiểm tra $KB_{public} \land \neg C_i$ có **UNSAT** hay không:
-   - Nếu UNSAT $\implies C_i$ bắt buộc phải là **CRIMINAL**.
-3. Kiểm tra $KB_{public} \land C_i$ có **UNSAT** hay không:
-   - Nếu UNSAT $\implies C_i$ bắt buộc phải là **INNOCENT**.
-4. **Phân loại Kết quả (Verdict Result):**
-   - **`ACCEPTED`:** Nếu trạng thái người chơi gửi trùng với trạng thái bị ép buộc bởi logic. Lúc này nhân vật được mở khóa và các manh mối mới do nhân vật nắm giữ được công khai.
-   - **`CONTRADICTED`:** Nếu logic ép buộc trạng thái ngược lại.
-   - **`NOT_PROVABLE`:** Nếu cả $C_i$ và $\neg C_i$ đều thỏa mãn (SAT) với $KB_{public}$ hiện tại (chưa đủ dữ liệu để kết luận).
+| What AI was used for | Prompt | AI response/output |
+| :--- | :--- | :--- |
+| Create the game | “Create a Griductive Solver game in Python using Flask, propositional logic, CNF encoding, and a DPLL SAT solver. Include a web GUI and an automatic logic agent.” | AI generated an initial project structure and draft implementations for the backend, game engine, logic modules, API, and web interface. |
+| Improve the UI | “Improve the UI of this Griductive game. Make the board clearer, add row and column coordinates, display character information, and highlight cells related to a selected clue.” | AI suggested and generated HTML, CSS, and JavaScript changes for the board layout, status cards, controls, and clue-region highlighting. |
+| Fix loading errors | “The application cannot load a selected puzzle. Check the Flask API and JavaScript code and fix the data-loading problem.” | AI inspected the data flow and suggested changes to the API response handling and frontend state update logic. |
+| Fix unsolvable puzzles | “This puzzle should have one solution, but the agent cannot solve it. Check the CNF encoding, entailment logic, and deduction loop for errors.” | AI suggested corrections to clue encoding, SAT assumptions, entailment classification, and the process of rebuilding the knowledge base after each verdict. |
+| Learn the algorithms | “Explain CNF encoding, cardinality constraints, DPLL, unit propagation, backtracking, entailment, and uniqueness checking for this project.” | AI provided explanations, pseudocode, formulas, and implementation examples for the required algorithms. |
+| Installation guidance | “Show me how to install the required libraries and run the Flask application, tests, benchmark, and report builder.” | AI returned the required `pip`, Flask, pytest, benchmark, and PDF-generation commands. |
+| Create the report | “Create a report template for the Griductive Solver project with sections for formulation, CNF encoding, DPLL, logic agent, experiments, references, and AI usage.” | AI produced a report outline and draft text, which were edited to match the implemented project and assignment requirements. |
 
----
 
-## 5: AI LOGIC AGENT & CHU TRÌNH SUY LUẬN TỰ ĐỘNG
+### REFERENCES
 
-### 5.1. Chu trình Suy luận Toàn cục (Full Deduction Loop)
-AI Agent hoạt động độc lập theo quy trình:
-1. Quét danh sách các nhân vật chưa lộ theo thứ tự xác định hàng-cột (Row-Major: A1, B1, C1, A2...).
-2. Với mỗi nhân vật, gọi hàm `classify_character(char_id)` để kiểm tra entailment.
-3. Nếu tìm thấy nhân vật $C_k$ có trạng thái bị ép buộc (`CRIMINAL` hoặc `INNOCENT`):
-   - Gửi verdict đến `GameEngine`.
-   - Nhận về các manh mối mới được kích hoạt.
-   - Cập nhật $KB_{public}$ và lặp lại bước 1.
-4. Quá trình dừng lại khi toàn bộ $N \times N$ nhân vật đã được giải mã hoặc không còn nhân vật nào có thể suy diễn thêm.
-
-### 5.2. Tạo Gợi ý Thông minh & Giải thích Tự nhiên (Hint & Explanations)
-Phương thức `provide_hint()` của Agent phân tích $KB_{public}$, tìm ra nhân vật kế tiếp có thể giải được và tự động trích xuất các manh mối liên quan trực tiếp đến nhân vật đó (dựa trên tên, hàng, cột hoặc vùng lân cận), trả về:
-- Nhân vật & Tọa độ gợi ý.
-- Trạng thái được suy ra.
-- Lời giải thích tự nhiên bằng ngôn ngữ người đọc.
-- Danh sách các câu manh mối làm tiền đề.
-- Thống kê chi tiết DPLL Solver.
-
----
-
-## 6: THIẾT KẾ GIAO DIỆN WEB GUI & REST API
-
-### 6.1. Kiến trúc REST API (Flask Backend)
-Hệ thống cung cấp đầy đủ các endpoint chuẩn RESTful:
-- `GET /`: Giao diện Web GUI chính.
-- `GET /api/puzzles`: Danh sách các bài toán có sẵn kèm tiêu đề.
-- `POST /api/load`: Tải câu đố từ file JSON, kiểm tra tính duy nhất (Uniqueness Check).
-- `POST /api/restart`: Khởi tạo lại trạng thái ban đầu của câu đố.
-- `GET /api/state`: Lấy trạng thái hiện tại của bàn cờ và các manh mối công khai.
-- `POST /api/verdict`: Người chơi gửi phán quyết cho 1 nhân vật (`character_id`, `status`).
-- `GET /api/hint`: Yêu cầu Agent sinh gợi ý và giải thích.
-- `POST /api/auto-step`: Agent thực hiện 1 bước suy luận kế tiếp.
-- `POST /api/auto-solve`: Agent chạy tự động toàn bộ chu trình suy luận đến khi hoàn thành.
-
-### 6.2. Thiết kế Giao diện Hiện đại
-- Giao diện Dark Theme cao cấp kết hợp phong cách Glassmorphism (hiệu ứng kính mờ, viền phát sáng gradient).
-- Hiển thị lưới nhân vật linh hoạt theo kích thước $3\times3, 4\times4, 5\times5$.
-- Tương tác thông minh: click vào manh mối bất kỳ sẽ tự động highlight vùng ô tương ứng (Region Highlight) trên bàn cờ.
-
----
-
-## 7: THỰC NGHIỆM, ĐÁNH GIÁ HIỆU NĂNG & KIỂM THỬ (TEST COVERAGE)
-
-### 7.1. Kết quả Thực nghiệm trên Bộ Dữ liệu Mẫu
-
-| Tên Bài toán | Kích thước | Số Biến chính | Số Mệnh đề CNF | Số Bước Giải | Số Lời giải Duy nhất | Thời gian Giải (ms) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| `puzzle_01_3x3_easy.json` | $3 \times 3$ | 9 | 18 | 9 | 1 (Duy nhất) | 8.2 ms |
-| `puzzle_02_3x3_hard.json` | $3 \times 3$ | 9 | 24 | 9 | 1 (Duy nhất) | 11.4 ms |
-| `puzzle_03_4x4_easy.json` | $4 \times 4$ | 16 | 38 | 16 | 1 (Duy nhất) | 18.7 ms |
-| `puzzle_04_4x4_medium.json`| $4 \times 4$ | 16 | 45 | 16 | 1 (Duy nhất) | 24.1 ms |
-| `puzzle_05_5x5_medium.json`| $5 \times 5$ | 25 | 62 | 25 | 1 (Duy nhất) | 39.5 ms |
-| `puzzle_06_5x5_expert.json`| $5 \times 5$ | 25 | 86 | 25 | 1 (Duy nhất) | 58.3 ms |
-| `puzzle_07_3x3_neighbors.json`| $3 \times 3$ | 9 | 22 | 9 | 1 (Duy nhất) | 9.1 ms |
-
-### 7.2. Đánh giá Độ bao phủ Kiểm thử (Unit Test Coverage)
-Hệ thống kiểm thử tự động với `pytest` đạt **50/50 test cases PASSED** với độ bao phủ mã nguồn tổng thể **91%**:
-- `test_api.py`: 17 tests kiểm tra toàn bộ REST API, status codes (200, 400, 404), các luồng dữ liệu hợp lệ và ngoại lệ.
-- `test_agent.py`: 9 tests kiểm tra Agent hint, deterministic order, phân loại logic, và tính cô lập bảo mật.
-- `test_engine.py`: 9 tests kiểm tra GameEngine, schema validation, restart, và kiểm định tính duy nhất.
-- `test_status_cases.py`: 5 tests kiểm tra chuyên biệt các trạng thái `ACCEPTED`, `CONTRADICTED`, `NOT_PROVABLE`, `INCONSISTENT`, `UNKNOWN`.
-- `test_puzzles.py`: 4 tests tự động duyệt toàn bộ file JSON trong `data/`, xác thực JSON schema, tính duy nhất và khả năng giải thành công 100%.
-- `test_cnf_encoder.py`: Đối chiếu sinh $2^N$ assignments giữa CNF Encoder và Semantic Evaluator.
-- `test_dpll.py`: Kiểm tra DPLL Solver trên các mô hình SAT, UNSAT và Assumptions.
-
----
-
-## TÀI LIỆU THAM KHẢO
-1. Stuart Russell and Peter Norvig, *Artificial Intelligence: A Modern Approach (4th Edition)*, Chapter 7: Logical Agents, Pearson, 2020.
-2. Martin Davis, George Logemann, and Donald Loveland, *A Machine Program for Theorem-Proving*, Communications of the ACM, 5(7):394–397, 1962.
-3. Armin Biere, Marijn Heule, Hans van Maaren, and Toby Walsh, *Handbook of Satisfiability*, IOS Press, 2009.
-4. Giáo trình môn học Nhập môn Trí tuệ Nhân tạo (CSC14003), Khoa Công nghệ Thông tin, Trường Đại học Khoa học Tự nhiên - ĐHQG-HCM.
+- Sinz, C. “Towards an Optimal CNF Encoding of Boolean Cardinality Constraints.” CP, 2005.
+- Davis, M., Logemann, G., and Loveland, D. “A Machine Program for Theorem-Proving.” Communications of the ACM, 1962.
+- Python 3 documentation: `dataclasses`, `enum`, `typing.Protocol`, and `itertools`.
+- Flask documentation: https://flask.palletsprojects.com/
+- `jsonschema` documentation: https://python-jsonschema.readthedocs.io/
+- `pytest` documentation: https://docs.pytest.org/
+- KaTeX documentation: https://katex.org/
+- Griductive official game and how-to-play guide: https://griductive.com/
